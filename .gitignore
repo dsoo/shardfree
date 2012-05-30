@@ -1,0 +1,4 @@
+*.o
+sf-client
+sf-server
+dependencies.mk
