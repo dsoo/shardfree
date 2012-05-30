@@ -4,18 +4,23 @@
 CXXFILES:=$(shell find . -type f -name '*.cc' -print)
 OUTPUTS = build/sf-server build/sf-client
 
-SERVER_OBJECTS = sf-server.o
+SERVER_OBJECTS = sf-server.o sf-worker.o sf-simulator.o sf-global.o sf-logger.o
 CLIENT_OBJECTS = sf-client.o
 OBJECTS = $(SERVER_OBJECTS) $(CLIENT_OBJECTS)
+BUILD_DIR = build
 
 WARNINGS = -Wall
 LFLAGS = -lzmq
-CPPFLAGS = $(WARNINGS)
+CPPFLAGS = $(WARNINGS) -g
 
-all: $(OUTPUTS)
+all: $(BUILD_DIR) $(OUTPUTS)
+
+$(BUILD_DIR):
+	mkdir -p $@	
 
 clean:
-	rm -rf $(OUTPUTS) $(OBJECTS)
+	rm -rf $(BUILD_DIR)
+	rm -rf $(OBJECTS)
 
 build/sf-server: $(SERVER_OBJECTS)
 	g++ $(CPPFLAGS) $(LFLAGS) $^ -o $@
