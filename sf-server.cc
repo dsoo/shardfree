@@ -22,10 +22,10 @@ int main()
     //  Prepare our context and sockets
     gZMQContextp = new zmq::context_t(1);
 
-    zmq::socket_t clients(*gZMQContextp, ZMQ_ROUTER);
-    clients.bind("tcp://*:5555");
-    zmq::socket_t worker_sockets(*gZMQContextp, ZMQ_DEALER);
-    worker_sockets.bind("inproc://workers");
+    //zmq::socket_t clients(*gZMQContextp, ZMQ_ROUTER);
+    //clients.bind("tcp://*:5555");
+    //zmq::socket_t worker_sockets(*gZMQContextp, ZMQ_DEALER);
+    //worker_sockets.bind("inproc://workers");
 
     // Spawn our log output worker
     SFLogOutput log_output = SFLogOutput();
@@ -43,6 +43,6 @@ int main()
     //  workers.push_back(new SFWorker());
     //}
     ////  Connect work threads to client threads via a queue
-    zmq::device(ZMQ_QUEUE, clients, worker_sockets);
+    //zmq::device(ZMQ_QUEUE, clients, worker_sockets);
     return 0;
 }
