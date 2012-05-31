@@ -19,30 +19,33 @@
 
 int main()
 {
-    //  Prepare our context and sockets
-    gZMQContextp = new zmq::context_t(1);
+  //  Prepare our context and sockets
+  gZMQContextp = new zmq::context_t(1);
 
-    //zmq::socket_t clients(*gZMQContextp, ZMQ_ROUTER);
-    //clients.bind("tcp://*:5555");
-    //zmq::socket_t worker_sockets(*gZMQContextp, ZMQ_DEALER);
-    //worker_sockets.bind("inproc://workers");
+  //zmq::socket_t clients(*gZMQContextp, ZMQ_ROUTER);
+  //clients.bind("tcp://*:5555");
+  //zmq::socket_t worker_sockets(*gZMQContextp, ZMQ_DEALER);
+  //worker_sockets.bind("inproc://workers");
 
-    // Spawn our log output worker
-    SFLogOutput log_output = SFLogOutput();
+  // Spawn our log output worker
+  SFLogOutput log_output = SFLogOutput();
 
-    SFLogger logger;
-    while (1)
-    {
-      sleep(1);    
-      logger.log();      
-    }
-    
-    //std::vector<SFWorker *> workers;
-    ////  Launch pool of worker threads, same as number of CPUs
-    //for (int thread_nbr = 0; thread_nbr != 5; thread_nbr++) {
-    //  workers.push_back(new SFWorker());
-    //}
-    ////  Connect work threads to client threads via a queue
-    //zmq::device(ZMQ_QUEUE, clients, worker_sockets);
-    return 0;
+  std::vector<SFWorker *> workers;
+  //  Launch pool of worker threads, same as number of CPUs
+  for (int thread_nbr = 0; thread_nbr != 5; thread_nbr++) {
+    workers.push_back(new SFWorker());
+  }
+
+  SFLogger logger;
+  int counter = 0;
+  while (1)
+  {
+    sleep(1);
+    Log(logger).get() << "Waity waity" << counter;
+    ++counter;
+  }
+  //
+  ////  Connect work threads to client threads via a queue
+  //zmq::device(ZMQ_QUEUE, clients, worker_sockets);
+  return 0;
 }

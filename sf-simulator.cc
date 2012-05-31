@@ -27,7 +27,7 @@ SFSimulator::SFSimulator() : counter(0), loggerp(NULL)
 
 SFSimulator::~SFSimulator()
 {
-  
+
 }
 
 void SFSimulator::run()
@@ -50,8 +50,7 @@ void SFSimulator::collect()
 
 void SFSimulator::simulate()
 {
-    std::cout << "Simulating " << counter << std::endl;
-    loggerp->log();
+    Log(*loggerp).get() << "Testy testy " << counter;
     sleep(1);
     // Push all updates as a result of simulation into update queue/data structure
     counter += 1;

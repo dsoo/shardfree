@@ -4,6 +4,28 @@
 #include "sf-logger.h"
 #include "sf-global.h"
 
+Log::Log(SFLogger &logger) : logger(logger)
+{
+}
+//
+//Log::Log(const Log &log) : os(log.os)
+//{
+//}
+
+std::ostringstream& Log::get()
+{
+   return os;
+
+}
+Log::~Log()
+{
+  if (os.str().size())
+  {
+    os << std::endl;
+    logger.output(os.str());
+  }
+}
+
 SFLogger::SFLogger()
 {
   socketp = new zmq::socket_t(*gZMQContextp, ZMQ_PUSH);
@@ -48,12 +70,11 @@ SFLogger::~SFLogger()
   socketp = NULL;
 }
 
-void SFLogger::log()
+void SFLogger::output(const std::string &str)
 {
-  // Sends a message to the socket
-  zmq::message_t log(6);
-  memcpy ((void *) log.data (), "Hello", 5);
-  socketp->send(log);
+  zmq::message_t line(str.size());
+  memcpy((void *)line.data(), str.data(), str.size());
+  socketp->send(line);
 }
 
 void *log_output_routine(void *arg)
@@ -74,9 +95,9 @@ void *log_output_routine(void *arg)
   while (1) {
     zmq::message_t message;
     receiver.recv(&message);
-    
+
     // FIXME: This is totally not safe and likely to break.
-    std::cout << std::string((char *)message.data(), message.size()) << std::endl;
+    std::cout << std::string((char *)message.data(), message.size());
     // FIXME: Should terminate on shutdown message from parent
   }
 }
@@ -85,20 +106,20 @@ SFLogOutput::SFLogOutput()
 {
   // Create a worker thread that listens to the logger socket and prints the output
   pthread_t worker;
-  
+
   zmq::socket_t receiver(*gZMQContextp, ZMQ_PULL);
   receiver.bind("inproc://logready");
-  
+
   // FIXME: This needs to be made to block until the logger thread is created and initialized.
   pthread_create (&worker, NULL, log_output_routine, NULL);
   zmq::message_t message;
-  
+
   // Waits until log output thread has sent a message back before returning.
-  receiver.recv(&message);  
+  receiver.recv(&message);
 }
 
 
 SFLogOutput::~SFLogOutput()
 {
-  
+
 }
