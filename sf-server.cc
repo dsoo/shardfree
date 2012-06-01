@@ -11,7 +11,7 @@
 
 #include "sf-global.h"
 #include "sf-logger.h"
-#include "sf-worker.h"
+#include "sf-simulator.h"
 
 //
 // FIXME: Do all the memory management stuff properly.
@@ -22,21 +22,18 @@ int main()
   //  Prepare our context and sockets
   gZMQContextp = new zmq::context_t(1);
 
-  //zmq::socket_t clients(*gZMQContextp, ZMQ_ROUTER);
-  //clients.bind("tcp://*:5555");
-  //zmq::socket_t worker_sockets(*gZMQContextp, ZMQ_DEALER);
-  //worker_sockets.bind("inproc://workers");
-
   // Spawn our log output worker
   SFLogOutput log_output = SFLogOutput();
+  SFLogger logger;
 
   std::vector<SFWorker *> workers;
   //  Launch pool of worker threads, same as number of CPUs
   for (int thread_nbr = 0; thread_nbr != 5; thread_nbr++) {
-    workers.push_back(new SFWorker());
+    SFSimulator *simulatorp = new SFSimulator();
+    simulatorp->start();
+    workers.push_back(simulatorp);
   }
 
-  SFLogger logger;
   int counter = 0;
   while (1)
   {

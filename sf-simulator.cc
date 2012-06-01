@@ -5,19 +5,10 @@
 #include "sf-simulator.h"
 
 //
-// Class methods
-//
-SFSimulator *SFSimulator::create()
-{
-  return new SFSimulator;
-}
-
-//
 // Instance methods
 //
-SFSimulator::SFSimulator() : counter(0), loggerp(NULL)
+SFSimulator::SFSimulator() : SFWorker(), mCounter(0)
 {
-  loggerp = new SFLogger();
   // Start up SUB socket to listen to trusted neighbors
   // Start up SUB socket to listen to clients
   // Start up PUB socket to push updates to listeners
@@ -50,10 +41,10 @@ void SFSimulator::collect()
 
 void SFSimulator::simulate()
 {
-    Log(*loggerp).get() << "Testy testy " << counter;
+    SFLOG << "Testy testy " << mCounter;
     sleep(1);
     // Push all updates as a result of simulation into update queue/data structure
-    counter += 1;
+    mCounter += 1;
     return;
 }
 

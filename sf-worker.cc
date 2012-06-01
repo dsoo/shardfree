@@ -4,26 +4,41 @@
 
 #include "sf-worker.h"
 #include "sf-simulator.h"
+#include "sf-logger.h"
 
-void *worker_routine (void *arg)
+void *SFWorker::runWorker(void *argp)
 {
-  std::cout << "Started worker" << std::endl;
+  SFWorker *workerp = (SFWorker *)(argp);
 
-  //zmq::socket_t socket (*context, ZMQ_REP);
-  //socket.connect ("inproc://workers");
-
-  SFSimulator *simulatorp = SFSimulator::create();
-  simulatorp->run();
+  workerp->init();
+  workerp->run();
   return NULL;
 }
 
-SFWorker::SFWorker()
+SFWorker::SFWorker() : mLoggerp(NULL)
 {
-  pthread_t worker;
-  pthread_create(&worker, NULL, worker_routine, NULL);
 }
 
 SFWorker::~SFWorker()
 {
-  
+  delete mLoggerp;
+  mLoggerp = NULL;
+}
+
+void SFWorker::init()
+{
+  // Start up the logger
+  mLoggerp = new SFLogger();
+}
+
+void SFWorker::start()
+{
+  pthread_t worker;
+  pthread_create(&worker, NULL, SFWorker::runWorker, this);
+}
+
+const SFLogger &SFWorker::logger()
+{
+  // FIXME: Throw an exception if this is uninitialized
+  return *mLoggerp;
 }

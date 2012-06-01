@@ -4,36 +4,34 @@
 #include "sf-logger.h"
 #include "sf-global.h"
 
-Log::Log(SFLogger &logger) : logger(logger)
+
+// Logging implementation cribbed (and simplified) from here: http://www.drdobbs.com/cpp/201804215
+
+Log::Log(const SFLogger &logger) : logger(logger)
 {
 }
-//
-//Log::Log(const Log &log) : os(log.os)
-//{
-//}
 
 std::ostringstream& Log::get()
 {
-   return os;
-
+   return mOSS;
 }
+
 Log::~Log()
 {
-  if (os.str().size())
+  if (mOSS.str().size())
   {
-    os << std::endl;
-    logger.output(os.str());
+    mOSS << std::endl;
+    logger.output(mOSS.str());
   }
 }
+
 
 SFLogger::SFLogger()
 {
   socketp = new zmq::socket_t(*gZMQContextp, ZMQ_PUSH);
   try
   {
-    std::cout << "Connecting logger" << std::endl;
     socketp->connect("inproc://logger");
-    std::cout << "Logger connected!" << std::endl;
   }
   catch(...)
   {
@@ -70,17 +68,38 @@ SFLogger::~SFLogger()
   socketp = NULL;
 }
 
-void SFLogger::output(const std::string &str)
+void SFLogger::output(const std::string &str) const
 {
   zmq::message_t line(str.size());
   memcpy((void *)line.data(), str.data(), str.size());
   socketp->send(line);
 }
 
+void *log_output_routine(void *arg);
+
+SFLogOutput::SFLogOutput()
+{
+  // Create a worker thread that listens to the logger socket and prints the output
+  pthread_t worker;
+
+  zmq::socket_t receiver(*gZMQContextp, ZMQ_PULL);
+  receiver.bind("inproc://logready");
+
+  pthread_create (&worker, NULL, log_output_routine, NULL);
+  zmq::message_t message;
+
+  // Waits until log output thread is fully initialized before returning.
+  receiver.recv(&message);
+}
+
+
+SFLogOutput::~SFLogOutput()
+{
+}
+
+
 void *log_output_routine(void *arg)
 {
-  std::cout << "Started log worker" << std::endl;
-
   zmq::socket_t receiver(*gZMQContextp, ZMQ_PULL);
   receiver.bind("inproc://logger");
 
@@ -97,29 +116,9 @@ void *log_output_routine(void *arg)
     receiver.recv(&message);
 
     // FIXME: This is totally not safe and likely to break.
+    // FIXME: This should aggregate the stream and publish it on a ZeroMQ
+    // PubSub socket, which will then allow me to send it to a websocket proxy
     std::cout << std::string((char *)message.data(), message.size());
     // FIXME: Should terminate on shutdown message from parent
   }
-}
-
-SFLogOutput::SFLogOutput()
-{
-  // Create a worker thread that listens to the logger socket and prints the output
-  pthread_t worker;
-
-  zmq::socket_t receiver(*gZMQContextp, ZMQ_PULL);
-  receiver.bind("inproc://logready");
-
-  // FIXME: This needs to be made to block until the logger thread is created and initialized.
-  pthread_create (&worker, NULL, log_output_routine, NULL);
-  zmq::message_t message;
-
-  // Waits until log output thread has sent a message back before returning.
-  receiver.recv(&message);
-}
-
-
-SFLogOutput::~SFLogOutput()
-{
-
 }

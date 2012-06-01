@@ -18,12 +18,12 @@ class SFLogger;
 class Log
 {
 public:
-  Log(SFLogger &logger);
+  Log(const SFLogger &logger);
   virtual ~Log();
   std::ostringstream& get();
 private:
-  SFLogger &logger;
-  std::ostringstream os;
+  const SFLogger &logger;
+  std::ostringstream mOSS;
 private:
   Log(const Log&);
   Log& operator =(const Log&);
@@ -37,7 +37,7 @@ class SFLogger
     SFLogger();
     virtual ~SFLogger();
 
-    void output(const std::string &str);
+    void output(const std::string &str) const;
   private:
     zmq::socket_t *socketp;
 };

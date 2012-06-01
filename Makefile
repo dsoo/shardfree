@@ -2,11 +2,10 @@
 # and it matters.
 
 CXXFILES:=$(shell find . -type f -name '*.cc' -print)
-OUTPUTS = build/sf-server build/sf-client
+OUTPUTS = build/sf-server
 
 SERVER_OBJECTS = sf-server.o sf-worker.o sf-simulator.o sf-global.o sf-logger.o
-CLIENT_OBJECTS = sf-client.o
-OBJECTS = $(SERVER_OBJECTS) $(CLIENT_OBJECTS)
+OBJECTS = $(SERVER_OBJECTS)
 BUILD_DIR = build
 
 WARNINGS = -Wall
@@ -23,9 +22,6 @@ clean:
 	rm -rf $(OBJECTS)
 
 build/sf-server: $(SERVER_OBJECTS)
-	g++ $(CPPFLAGS) $(LFLAGS) $^ -o $@
-
-build/sf-client: $(CLIENT_OBJECTS)
 	g++ $(CPPFLAGS) $(LFLAGS) $^ -o $@
 
 depend:
