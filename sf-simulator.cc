@@ -7,7 +7,7 @@
 //
 // Instance methods
 //
-SFSimulator::SFSimulator() : SFWorker(), mCounter(0)
+SFSimulator::SFSimulator(const std::string &id) : SFWorker(id), mCounter(0)
 {
   // Start up SUB socket to listen to trusted neighbors
   // Start up SUB socket to listen to clients
@@ -23,6 +23,9 @@ SFSimulator::~SFSimulator()
 
 void SFSimulator::run()
 {
+  // Set up the PUB socket where you push all your output
+  // Find all of your neighbors
+  // Subscribe to all of your neighbors
   while(1) {
     collect();
     simulate();
@@ -32,17 +35,14 @@ void SFSimulator::run()
 
 void SFSimulator::collect()
 {
-    // Collect updates from neighbors
-    //std::cout << "Collecting" << std::endl;
-
-    // Pull messages until all updates for current frame received from neighbors or we time out.
+    // Listen to all of your neighbor's subs until you get all of the updates for the
+    // current frame.
     return;
 }
 
 void SFSimulator::simulate()
 {
     SFLOG << "Testy testy " << mCounter;
-    sleep(1);
     // Push all updates as a result of simulation into update queue/data structure
     mCounter += 1;
     return;

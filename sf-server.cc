@@ -29,7 +29,9 @@ int main()
   std::vector<SFWorker *> workers;
   //  Launch pool of worker threads, same as number of CPUs
   for (int thread_nbr = 0; thread_nbr != 5; thread_nbr++) {
-    SFSimulator *simulatorp = new SFSimulator();
+    std::ostringstream ss;
+    ss << thread_nbr;
+    SFSimulator *simulatorp = new SFSimulator(ss.str());
     simulatorp->start();
     workers.push_back(simulatorp);
   }
@@ -38,7 +40,7 @@ int main()
   while (1)
   {
     sleep(1);
-    Log(logger).get() << "Waity waity" << counter;
+    Log(logger).get() << "Waity waity " << counter;
     ++counter;
   }
   //

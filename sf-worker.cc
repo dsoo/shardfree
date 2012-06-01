@@ -15,7 +15,7 @@ void *SFWorker::runWorker(void *argp)
   return NULL;
 }
 
-SFWorker::SFWorker() : mLoggerp(NULL)
+SFWorker::SFWorker(const std::string &id) : mID(id), mLoggerp(NULL)
 {
 }
 
@@ -29,6 +29,7 @@ void SFWorker::init()
 {
   // Start up the logger
   mLoggerp = new SFLogger();
+  mLoggerp->setPrefix(mID + ":");
 }
 
 void SFWorker::start()

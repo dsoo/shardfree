@@ -7,7 +7,7 @@ class SFLogger;
 
 class SFSimulator : public SFWorker {
   public:    
-    SFSimulator();
+    SFSimulator(const std::string &id);
     virtual ~SFSimulator();
 
     /*virtual*/ void run();

@@ -37,9 +37,11 @@ class SFLogger
     SFLogger();
     virtual ~SFLogger();
 
+    void setPrefix(const std::string &prefix);
     void output(const std::string &str) const;
   private:
-    zmq::socket_t *socketp;
+    zmq::socket_t *mSocketp;
+    std::string mPrefix;
 };
 
 //

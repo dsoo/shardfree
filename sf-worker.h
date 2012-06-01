@@ -1,6 +1,8 @@
 #ifndef SHARDFREE_SF_WORKER_H_
 #define SHARDFREE_SF_WORKER_H_
 
+#include <string>
+
 class SFLogger;
 
 #define SFLOG Log(logger()).get()
@@ -8,7 +10,7 @@ class SFLogger;
 class SFWorker
 {
   public:
-    SFWorker();
+    SFWorker(const std::string &id);
     virtual ~SFWorker();
 
     void start();
@@ -20,6 +22,7 @@ class SFWorker
     
     static void *runWorker(void *argp);
   private:
+    std::string mID;
     SFLogger *mLoggerp;
 };
 

@@ -28,10 +28,10 @@ Log::~Log()
 
 SFLogger::SFLogger()
 {
-  socketp = new zmq::socket_t(*gZMQContextp, ZMQ_PUSH);
+  mSocketp = new zmq::socket_t(*gZMQContextp, ZMQ_PUSH);
   try
   {
-    socketp->connect("inproc://logger");
+    mSocketp->connect("inproc://logger");
   }
   catch(...)
   {
@@ -64,15 +64,21 @@ SFLogger::SFLogger()
 
 SFLogger::~SFLogger()
 {
-  delete socketp;
-  socketp = NULL;
+  delete mSocketp;
+  mSocketp = NULL;
+}
+
+void SFLogger::setPrefix(const std::string &prefix)
+{
+  mPrefix = prefix;
 }
 
 void SFLogger::output(const std::string &str) const
 {
-  zmq::message_t line(str.size());
-  memcpy((void *)line.data(), str.data(), str.size());
-  socketp->send(line);
+  zmq::message_t line(str.size() + mPrefix.size());
+  memcpy((void *)line.data(), mPrefix.data(), mPrefix.size());
+  memcpy((void *)((char *)line.data() + mPrefix.size()), str.data(), str.size());
+  mSocketp->send(line);
 }
 
 void *log_output_routine(void *arg);
