@@ -16,13 +16,17 @@ class SFWorker
     void start();
     virtual void run() = 0;
     
-    const SFLogger &logger();
+    const SFLogger &logger() const;
+    const std::string &id() const;
+  protected:
+    zmq::context_t &context() const;
   private:
     void init();
     
     static void *runWorker(void *argp);
   private:
     std::string mID;
+    zmq::context_t *mContextp;
     SFLogger *mLoggerp;
 };
 

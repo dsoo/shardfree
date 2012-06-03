@@ -18,6 +18,7 @@ class SFSimulator : public SFWorker {
     
   private:
     int mCounter;
+    zmq::socket_t *mPubSocketp;
 };
 
 #endif // SHARDFREE_SF_SIMULATOR_H_
