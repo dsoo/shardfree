@@ -26,12 +26,12 @@ Log::~Log()
 }
 
 
-SFLogger::SFLogger()
+SFLogger::SFLogger(const std::string &collector_name)
 {
-  mSocketp = new zmq::socket_t(*gZMQContextp, ZMQ_PUSH);
+  mCollectorp = new zmq::socket_t(*gZMQContextp, ZMQ_PUSH);
   try
   {
-    mSocketp->connect("inproc://logger");
+    mCollectorp->connect(collector_name.c_str());
   }
   catch(...)
   {
@@ -64,8 +64,8 @@ SFLogger::SFLogger()
 
 SFLogger::~SFLogger()
 {
-  delete mSocketp;
-  mSocketp = NULL;
+  delete mCollectorp;
+  mCollectorp = NULL;
 }
 
 void SFLogger::setPrefix(const std::string &prefix)
@@ -78,36 +78,44 @@ void SFLogger::output(const std::string &str) const
   zmq::message_t line(str.size() + mPrefix.size());
   memcpy((void *)line.data(), mPrefix.data(), mPrefix.size());
   memcpy((void *)((char *)line.data() + mPrefix.size()), str.data(), str.size());
-  mSocketp->send(line);
+  mCollectorp->send(line);
 }
 
 void *log_output_routine(void *arg);
 
-SFLogOutput::SFLogOutput()
+SFLogPublisher::SFLogPublisher(const std::string &collector_name, const std::string &publisher_name) :
+  mCollectorName(collector_name),
+  mPublisherName(publisher_name),
+  mCollectorp(NULL),
+  mPublisherp(NULL)
 {
   // Create a worker thread that listens to the logger socket and prints the output
   pthread_t worker;
 
-  zmq::socket_t receiver(*gZMQContextp, ZMQ_PULL);
-  receiver.bind("inproc://logready");
+  zmq::socket_t ready_socket(*gZMQContextp, ZMQ_PULL);
+  ready_socket.bind("inproc://logready");
 
-  pthread_create (&worker, NULL, log_output_routine, NULL);
+  pthread_create (&worker, NULL, log_output_routine, this);
   zmq::message_t message;
 
-  // Waits until log output thread is fully initialized before returning.
-  receiver.recv(&message);
+  // Waits until ZMQ sockets are abound before returning.
+  ready_socket.recv(&message);
 }
 
-
-SFLogOutput::~SFLogOutput()
+SFLogPublisher::~SFLogPublisher()
 {
+  delete mCollectorp;
+  mCollectorp = NULL;
+  delete mPublisherp;
+  mPublisherp = NULL;
 }
 
-
-void *log_output_routine(void *arg)
+void SFLogPublisher::run()
 {
-  zmq::socket_t receiver(*gZMQContextp, ZMQ_PULL);
-  receiver.bind("inproc://logger");
+  mCollectorp = new zmq::socket_t(*gZMQContextp, ZMQ_PULL);
+  mCollectorp->bind(mCollectorName.c_str());
+  mPublisherp = new zmq::socket_t(*gZMQContextp, ZMQ_PUB);
+  mPublisherp->bind(mPublisherName.c_str());
 
   // Now that we're bound, tell the main thread that we're ready for use
   {
@@ -119,12 +127,18 @@ void *log_output_routine(void *arg)
 
   while (1) {
     zmq::message_t message;
-    receiver.recv(&message);
+    mCollectorp->recv(&message);
 
     // FIXME: This is totally not safe and likely to break.
-    // FIXME: This should aggregate the stream and publish it on a ZeroMQ
     // PubSub socket, which will then allow me to send it to a websocket proxy
     std::cout << std::string((char *)message.data(), message.size());
     // FIXME: Should terminate on shutdown message from parent
+    mPublisherp->send(message);
   }
+}
+
+void *log_output_routine(void *arg)
+{
+  auto log_publisherp = (SFLogPublisher *)arg;
+  log_publisherp->run(); 
 }

@@ -23,7 +23,7 @@ int main()
   gZMQContextp = new zmq::context_t(1);
 
   // Spawn our log output worker
-  SFLogOutput log_output = SFLogOutput();
+  SFLogPublisher log_publisher = SFLogPublisher();
   SFLogger logger;
 
   std::vector<SFWorker *> workers;
