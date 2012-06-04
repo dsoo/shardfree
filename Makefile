@@ -34,7 +34,9 @@ depend:
 	done
 	for F in $(CXXFILES); do \
 		D=`dirname $$F`; \
-		B=`basename -s .cpp $$F`; \
+		B=`basename -s .cc $$F`; \
 		$(CXX) $(CPPFLAGS) -MM -MT $$D/$$B.o -MG $$F \
 		 >> dependencies.mk; \
 	done
+	
+include dependencies.mk
