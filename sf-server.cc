@@ -11,6 +11,8 @@
 
 #include "sf-global.h"
 #include "sf-logger.h"
+#include "sf-log-publisher.h"
+#include "sf-log-writer.h"
 #include "sf-simulator.h"
 
 //
@@ -23,7 +25,8 @@ int main()
   gZMQContextp = new zmq::context_t(1);
 
   // Spawn our log output worker
-  SFLogPublisher log_publisher = SFLogPublisher();
+  SFLogPublisher log_publisher("inproc://logger", "tcp://*:5555");
+  SFLogWriter log_writer("tcp://localhost:5555");
   SFLogger logger;
 
   std::vector<SFWorker *> workers;

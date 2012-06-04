@@ -8,11 +8,6 @@
 //
 //
 
-namespace zmq
-{
-  class socket_t;
-}
-
 class SFLogger;
 
 class Log
@@ -42,34 +37,6 @@ class SFLogger
   private:
     zmq::socket_t *mCollectorp;
     std::string mPrefix;
-};
-
-class SFLogPublisher
-{
-  public:
-    SFLogPublisher(const std::string &collector_name = "inproc://logger",
-                   const std::string &publisher_name = "inproc://logpub");
-    virtual ~SFLogPublisher();
-    
-    void run();
-  private:
-    std::string mCollectorName;
-    std::string mPublisherName;
-    zmq::socket_t *mCollectorp;
-    zmq::socket_t *mPublisherp;
-};
-
-//
-// Outputs logs from the logger asynchronously on a separate thread.
-//
-class SFLogWriter
-{
-  public:
-    SFLogWriter(const std::string &publisher_name = "inproc://logpub");
-    virtual ~SFLogWriter();
-    
-  private:
-    zmq::socket_t *mPublisherp;
 };
 
 #endif // SHARDFREE_SF_LOGGER_H_
