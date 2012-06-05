@@ -13,6 +13,7 @@
 #include "sf-logger.h"
 #include "sf-log-publisher.h"
 #include "sf-log-writer.h"
+#include "sf-presence.h"
 #include "sf-simulator.h"
 
 //
@@ -29,9 +30,20 @@ int main()
   SFLogWriter log_writer("tcp://localhost:5555");
   SFLogger logger;
 
+  // Spawn the presence server
+  SFPresence presence;
+  presence.start();
+  
+  // Test talking to the presence service
+  SFPresenceClient presence_client;
+  
+  presenceClient->sendRequest();
+  
+  
+  
   std::vector<SFWorker *> workers;
   //  Launch pool of worker threads, same as number of CPUs
-  for (int thread_nbr = 0; thread_nbr != 5; thread_nbr++) {
+  for (int thread_nbr = 0; thread_nbr != 1; thread_nbr++) {
     std::ostringstream ss;
     ss << thread_nbr;
     SFSimulator *simulatorp = new SFSimulator(ss.str());

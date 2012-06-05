@@ -4,7 +4,7 @@
 CXXFILES:=$(shell find . -type f -name '*.cc' -print)
 OUTPUTS = build/sf-server build/sf-log-client
 
-SERVER_OBJECTS = sf-server.o sf-worker.o sf-simulator.o sf-global.o sf-logger.o sf-log-publisher.o sf-log-writer.o
+SERVER_OBJECTS = sf-server.o sf-worker.o sf-simulator.o sf-global.o sf-logger.o sf-log-publisher.o sf-log-writer.o sf-presence.o
 CLIENT_OBJECTS = sf-log-client.o sf-global.o sf-log-writer.o
 OBJECTS = $(SERVER_OBJECTS)
 BUILD_DIR = build

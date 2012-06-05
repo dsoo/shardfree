@@ -10,6 +10,7 @@
 void *SFWorker::runWorker(void *argp)
 {
   SFWorker *workerp = (SFWorker *)(argp);
+  std::cout << workerp->id() << ":runWorker" << std::endl;
 
   workerp->init();
   workerp->run();
