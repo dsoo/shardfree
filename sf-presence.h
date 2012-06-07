@@ -24,6 +24,6 @@ class SFPresenceClient
     void sendRequest();
   private:
     zmq::socket_t *mPresenceReqp;
-}
+};
 
 #endif // SHARDFREE_SF_PRESENCE_H_

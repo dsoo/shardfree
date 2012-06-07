@@ -34,10 +34,10 @@ int main()
   SFPresence presence;
   presence.start();
   
-  // Test talking to the presence service
-  SFPresenceClient presence_client;
-  
-  presenceClient->sendRequest();
+  //// Test talking to the presence service
+  //SFPresenceClient presence_client;
+  //
+  //presenceClient->sendRequest();
   
   
   

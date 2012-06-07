@@ -39,20 +39,20 @@ void SFPresence::run()
     SFLOG << "Body:" << std::string((char *)message.data(), message.size());
   }
 }
-
-SFPresenceClient::SFPresenceClient(const std::string &endpoint) : mPresenceReqp(NULL)
-{
-  mPresenceReqp = new zmq::socket_t(gZMQContextp, ZMQ_REQ);
-  mPresenceReqp->connect(endpoint.c_str());
-}
-
-SFPresenceClient::~SFPresenceClient()
-{
-  delete mPresenceReqp;
-  mPresenceReqp = NULL;
-}
-
-void SFPresenceClient::sendRequest()
-{
-  zmq::message_t message()
-}
+//
+//SFPresenceClient::SFPresenceClient(const std::string &endpoint) : mPresenceReqp(NULL)
+//{
+//  mPresenceReqp = new zmq::socket_t(gZMQContextp, ZMQ_REQ);
+//  mPresenceReqp->connect(endpoint.c_str());
+//}
+//
+//SFPresenceClient::~SFPresenceClient()
+//{
+//  delete mPresenceReqp;
+//  mPresenceReqp = NULL;
+//}
+//
+//void SFPresenceClient::sendRequest()
+//{
+//  zmq::message_t message()
+//}
