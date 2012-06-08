@@ -10,17 +10,16 @@
 void *SFWorker::runWorker(void *argp)
 {
   SFWorker *workerp = (SFWorker *)(argp);
-  std::cout << workerp->id() << ":runWorker" << std::endl;
+  //std::cout << workerp->id() << ":runWorker" << std::endl;
 
   workerp->init();
   workerp->run();
   return NULL;
 }
 
-SFWorker::SFWorker(const std::string &id) : mID(id), mContextp(gZMQContextp), mLoggerp(NULL)
+SFWorker::SFWorker(const std::string &id, bool logging) : mID(id), mContextp(gZMQContextp), mLogging(logging), mLoggerp(NULL)
 {
-  // Assumes that we always have a viable ZeroMQ context to work with.
-  // FIXME: Get context from a singleton instead of a global
+  // FIXME: Initialize the ZeroMQ context in a better way than a global.
 }
 
 SFWorker::~SFWorker()
@@ -32,9 +31,12 @@ SFWorker::~SFWorker()
 
 void SFWorker::init()
 {
-  // Start up the logger
-  mLoggerp = new SFLogger();
-  mLoggerp->setPrefix(mID + ":");
+  if (mLogging)
+  {
+    // Start up the logger
+    mLoggerp = new SFLogger();
+    mLoggerp->setPrefix(mID + ":");
+  }
 }
 
 void SFWorker::start()

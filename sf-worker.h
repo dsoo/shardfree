@@ -10,7 +10,7 @@ class SFLogger;
 class SFWorker
 {
   public:
-    SFWorker(const std::string &id);
+    SFWorker(const std::string &id, bool logging = true);
     virtual ~SFWorker();
 
     void start();
@@ -27,6 +27,7 @@ class SFWorker
   private:
     std::string mID;
     zmq::context_t *mContextp;
+    bool mLogging;
     SFLogger *mLoggerp;
 };
 

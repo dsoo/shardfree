@@ -41,13 +41,13 @@ void SFSimulator::run()
   // Set up the PUB socket where you push all your output
   mPubSocketp = new zmq::socket_t(context(), ZMQ_PUB);
   mPubSocketp->bind((std::string("inproc://pub") + id()).c_str());
-  
+
   // Tell the presence server that you're available
-  
-  
+
+
   // Find all of your neighbors (from the presence server)
 
-  
+
   //// Subscribe to all of your neighbors
   //for(int i = 0; i < 5; ++i) {
   //  std::ostringstream ss;
@@ -89,7 +89,7 @@ void SFSimulator::collect()
     //while (1) {
     //    zmq::message_t message;
     //    zmq::poll (&items [0], 2, -1);
-    //    
+    //
     //    if (items [0].revents & ZMQ_POLLIN) {
     //        receiver.recv(&message);
     //        //  Process task

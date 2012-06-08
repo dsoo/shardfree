@@ -12,6 +12,7 @@ SFLogWriter::SFLogWriter(const std::string &publisher_name) :
   pthread_t worker;
 
   zmq::socket_t ready_socket(*gZMQContextp, ZMQ_PULL);
+  // FIXME: This should be uniquely named
   ready_socket.bind("inproc://writerready");
 
   pthread_create (&worker, NULL, runWorker, this);
@@ -68,7 +69,7 @@ void SFLogWriter::run()
       sleep(1);
     }
   }
-  
+
 
   // Now that we're bound, tell the main thread that we're ready for use
   {

@@ -4,19 +4,19 @@
 CXXFILES:=$(shell find . -type f -name '*.cc' -print)
 OUTPUTS = build/sf-server build/sf-log-client
 
-SERVER_OBJECTS = sf-server.o sf-worker.o sf-simulator.o sf-global.o sf-logger.o sf-log-publisher.o sf-log-writer.o sf-presence.o
+SERVER_OBJECTS = sf-server.o sf-worker.o sf-simulator.o sf-global.o sf-logger.o sf-log-publisher.o sf-log-writer.o sf-presence.o sf-log-writer-websocket.o
 CLIENT_OBJECTS = sf-log-client.o sf-global.o sf-log-writer.o
 OBJECTS = $(SERVER_OBJECTS)
 BUILD_DIR = build
 
 WARNINGS = -Wall
-LFLAGS = -lzmq
+LFLAGS = -L./websockets/lib -lzmq ./websockets/lib/libwebsockets.a -lz
 CPPFLAGS = $(WARNINGS) -g
 
 all: $(BUILD_DIR) $(OUTPUTS)
 
 $(BUILD_DIR):
-	mkdir -p $@	
+	mkdir -p $@
 
 clean:
 	rm -rf $(BUILD_DIR)
@@ -42,5 +42,5 @@ depend:
 		$(CXX) $(CPPFLAGS) -MM -MT $$D/$$B.o -MG $$F \
 		 >> dependencies.mk; \
 	done
-	
+
 include dependencies.mk
