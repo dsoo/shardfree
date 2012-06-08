@@ -10,8 +10,8 @@ OBJECTS = $(SERVER_OBJECTS)
 BUILD_DIR = build
 
 WARNINGS = -Wall
-LFLAGS = -L./websockets/lib -lzmq ./websockets/lib/libwebsockets.a -lz
-CPPFLAGS = $(WARNINGS) -g
+LFLAGS = -lzmq -lz ./libwebsockets/lib/.libs/libwebsockets.a
+CPPFLAGS = $(WARNINGS) -g -I ./libwebsockets/lib
 
 all: $(BUILD_DIR) $(OUTPUTS)
 

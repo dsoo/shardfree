@@ -7,7 +7,8 @@ ZeroMQ-based server for real-time distributed simulation and clients
 
 Install zeromq using brew
 
-Install libwebsockets (using this fork on github)
-https://github.com/davidgaleano/libwebsockets
+Build libwebsockets as a submodule
 
-Note that make install doesn't appear to work for non-obvious reasons.
+git submodule init
+cd libwebsockets
+./configure;make # Make install doesn't work

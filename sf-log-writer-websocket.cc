@@ -1,7 +1,7 @@
 #include <pthread.h>
 #include <iostream>
 
-#include "websockets/lib/libwebsockets.h"
+#include "libwebsockets.h"
 
 #include "sf-global.h"
 #include "sf-log-writer-websocket.h"
