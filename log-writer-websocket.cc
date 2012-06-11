@@ -4,6 +4,7 @@
 #include "libwebsockets.h"
 
 #include "global.h"
+#include "logger.h"
 #include "log-writer-websocket.h"
 
 namespace ShardFree
@@ -144,29 +145,29 @@ void LogWriterWebsocket::run()
     }
     catch(...)
     {
-      std::cout << "Errno:" << errno << std::endl;
+      SFLOG << "Errno:" << errno;
       switch(errno)
       {
         case EINVAL:
-          std::cout << "EINVAL" << std::endl;
+          SFLOG << "EINVAL";
           break;
         case EPROTONOSUPPORT:
-          std::cout << "EPROTONOSUPPORT" << std::endl;
+          SFLOG << "EPROTONOSUPPORT";
           break;
         case ENOCOMPATPROTO:
-          std::cout << "ENOCOMPATPROTO" << std::endl;
+          SFLOG << "ENOCOMPATPROTO";
           break;
         case ETERM:
-          std::cout << "ETERM" << std::endl;
+          SFLOG << "ETERM";
           break;
         case ENOTSOCK:
-          std::cout << "ENOTSOCK" << std::endl;
+          SFLOG << "ENOTSOCK";
           break;
         case EMTHREAD:
-          std::cout << "EMTHREAD" << std::endl;
+          SFLOG << "EMTHREAD";
           break;
         default:
-          std::cout << "UNKNOWN ERROR" << std::endl;
+          SFLOG << "UNKNOWN ERROR";
       }
       sleep(1);
     }

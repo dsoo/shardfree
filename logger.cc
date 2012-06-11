@@ -6,8 +6,19 @@ namespace ShardFree
 {
 // Logging implementation cribbed (and simplified) from here: http://www.drdobbs.com/cpp/201804215
 
-Log::Log(const ShardFree::Logger &logger) : logger(logger)
+__thread Logger *tLoggerp = NULL;
+
+Log::Log()
 {
+  if (!tLoggerp)
+  {
+    // Initialize the per-thread logger
+    // FIXME: Need to clean this up when the thread goes away, somehow.
+    tLoggerp = new ShardFree::Logger;
+
+    // FIXME: Would be nice to set the prefix to something useful.
+    //mLoggerp->setPrefix(mID + ":");
+  }
 }
 
 std::ostringstream& Log::get()
@@ -20,52 +31,32 @@ Log::~Log()
   if (mOSS.str().size())
   {
     mOSS << std::endl;
-    logger.output(mOSS.str());
+    tLoggerp->output(mOSS.str());
   }
 }
 
 Logger::Logger(const std::string &collector_name)
 {
   mCollectorp = new zmq::socket_t(*gZMQContextp, ZMQ_PUSH);
-  mCollectorp->connect(collector_name.c_str());
 
-  //try
-  //{
-  //  mCollectorp->connect(collector_name.c_str());
-  //}
-  //catch(...)
-  //{
-  //  std::cout << "Errno:" << errno << std::endl;
-  //  switch(errno) {
-  //    case EINVAL:
-  //      std::cout << "EINVAL" << std::endl;
-  //      break;
-  //    case EPROTONOSUPPORT:
-  //      std::cout << "EPROTONOSUPPORT" << std::endl;
-  //      break;
-  //    case ENOCOMPATPROTO:
-  //      std::cout << "ENOCOMPATPROTO" << std::endl;
-  //      break;
-  //    case ETERM:
-  //      std::cout << "ETERM" << std::endl;
-  //      break;
-  //    case ENOTSOCK:
-  //      std::cout << "ENOTSOCK" << std::endl;
-  //      break;
-  //    case EMTHREAD:
-  //      std::cout << "EMTHREAD" << std::endl;
-  //      break;
-  //    default:
-  //      std::cout << "UNKNOWN ERROR" << std::endl;
-  //  }
-  //  exit(-1);
-  //}
+  // FIXME: Properly handle errors for this connect
+  mCollectorp->connect(collector_name.c_str());
 }
 
 Logger::~Logger()
 {
   delete mCollectorp;
   mCollectorp = NULL;
+}
+
+/*static*/ Logger &Logger::get()
+{
+  if (!tLoggerp)
+  {
+    // FIXME: Need to clean this up when the thread goes away, somehow.
+    tLoggerp = new Logger;
+  }
+  return *tLoggerp;
 }
 
 void Logger::setPrefix(const std::string &prefix)

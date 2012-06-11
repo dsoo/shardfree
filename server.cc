@@ -30,7 +30,6 @@ int main()
   ShardFree::LogPublisher log_publisher("inproc://logger", "inproc://logpub");
   ShardFree::LogWriter log_writer("inproc://logpub");
   ShardFree::LogWriterWebsocket log_writer_websocket("inproc://logpub");
-  ShardFree::Logger logger;
 
   // Spawn the presence server
   ShardFree::Presence presence;
@@ -45,7 +44,7 @@ int main()
 
   std::vector<ShardFree::Worker *> workers;
   //  Launch pool of worker threads, same as number of CPUs
-  for (int thread_nbr = 0; thread_nbr != 1; thread_nbr++) {
+  for (int thread_nbr = 0; thread_nbr != 3; thread_nbr++) {
     std::ostringstream ss;
     ss << thread_nbr;
     ShardFree::Simulator *simulatorp = new ShardFree::Simulator(ss.str());
@@ -57,7 +56,7 @@ int main()
   while (1)
   {
     sleep(1);
-    ShardFree::Log(logger).get() << "Waity waity " << counter;
+    ShardFree::Log().get() << "Waity waity " << counter;
     ++counter;
   }
   //

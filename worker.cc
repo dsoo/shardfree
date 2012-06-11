@@ -13,7 +13,7 @@ namespace ShardFree
 void *Worker::runWorker(void *argp)
 {
   Worker *workerp = (Worker *)(argp);
-  //std::cout << workerp->id() << ":runWorker" << std::endl;
+  Logger::get().setPrefix(workerp->mID + ":");
 
   workerp->init();
   workerp->run();
@@ -34,12 +34,6 @@ Worker::~Worker()
 
 void Worker::init()
 {
-  if (mLogging)
-  {
-    // Start up the logger
-    mLoggerp = new ShardFree::Logger();
-    mLoggerp->setPrefix(mID + ":");
-  }
 }
 
 void Worker::start()

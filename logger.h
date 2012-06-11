@@ -8,6 +8,8 @@
 //
 //
 
+#define SFLOG ShardFree::Log().get()
+
 namespace ShardFree
 {
 class Logger;
@@ -15,11 +17,10 @@ class Logger;
 class Log
 {
 public:
-  Log(const ShardFree::Logger &logger);
+  Log();
   virtual ~Log();
   std::ostringstream& get();
 private:
-  const ShardFree::Logger &logger;
   std::ostringstream mOSS;
 private:
   Log(const Log&);
@@ -33,6 +34,8 @@ class Logger
   public:
     Logger(const std::string &collector_name = "inproc://logger");
     virtual ~Logger();
+
+    static Logger &get();
 
     void setPrefix(const std::string &prefix);
     void output(const std::string &str) const;

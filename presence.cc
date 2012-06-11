@@ -50,7 +50,7 @@ void Presence::run()
 
 PresenceClient::PresenceClient(const std::string &endpoint) : mPresenceReqp(NULL)
 {
-  std::cout << "Presence client connecting to " << endpoint << std::endl;
+  SFLOG << "Presence client connecting to " << endpoint;
   mPresenceReqp = new zmq::socket_t(*gZMQContextp, ZMQ_REQ);
   bool connected = false;
   while (!connected)
@@ -62,28 +62,29 @@ PresenceClient::PresenceClient(const std::string &endpoint) : mPresenceReqp(NULL
     }
     catch(...)
     {
-      std::cout << "Errno:" << errno << std::endl;
-      switch(errno) {
+      SFLOG << "Errno:" << errno;
+      switch(errno)
+      {
         case EINVAL:
-          std::cout << "EINVAL" << std::endl;
+          SFLOG << "EINVAL";
           break;
         case EPROTONOSUPPORT:
-          std::cout << "EPROTONOSUPPORT" << std::endl;
+          SFLOG << "EPROTONOSUPPORT";
           break;
         case ENOCOMPATPROTO:
-          std::cout << "ENOCOMPATPROTO" << std::endl;
+          SFLOG << "ENOCOMPATPROTO";
           break;
         case ETERM:
-          std::cout << "ETERM" << std::endl;
+          SFLOG << "ETERM";
           break;
         case ENOTSOCK:
-          std::cout << "ENOTSOCK" << std::endl;
+          SFLOG << "ENOTSOCK";
           break;
         case EMTHREAD:
-          std::cout << "EMTHREAD" << std::endl;
+          SFLOG << "EMTHREAD";
           break;
         default:
-          std::cout << "UNKNOWN ERROR" << std::endl;
+          SFLOG << "UNKNOWN ERROR";
       }
       sleep(1);
     }
@@ -98,7 +99,7 @@ PresenceClient::~PresenceClient()
 
 void PresenceClient::sendRequest()
 {
-  std::cout << "Sending presence request" << std::endl;
+  SFLOG << "Sending presence request";
   std::string request_str = "presence";
   zmq::message_t message(request_str.size());
   memcpy(message.data(), request_str.data(), request_str.size());
@@ -106,7 +107,7 @@ void PresenceClient::sendRequest()
 
   zmq::message_t response;
   mPresenceReqp->recv(&response);
-  std::cout << "Presence response:" << std::string((char*)message.data(), message.size());
+  SFLOG << "Presence response:" << std::string((char*)message.data(), message.size());
 }
 
 }

@@ -17,7 +17,6 @@ LogPublisher::LogPublisher(const std::string &collector_name, const std::string 
   zmq::socket_t ready_socket(*gZMQContextp, ZMQ_PULL);
   ready_socket.bind("inproc://logpubready");
 
-  //std::cout << "Creating worker" << std::endl;
   pthread_create (&worker, NULL, runWorker, this);
   zmq::message_t message;
 
@@ -35,7 +34,6 @@ LogPublisher::~LogPublisher()
 
 void LogPublisher::run()
 {
-  //std::cout << "Starting up publisher" << std::endl;
   mCollectorp = new zmq::socket_t(*gZMQContextp, ZMQ_PULL);
   mCollectorp->bind(mCollectorName.c_str());
   mPublisherp = new zmq::socket_t(*gZMQContextp, ZMQ_PUB);
@@ -49,14 +47,12 @@ void LogPublisher::run()
     sender.send(message);
   }
 
-  //std::cout << "Collecting logs" << std::endl;
   while (1) {
     zmq::message_t message;
     mCollectorp->recv(&message);
 
     //// FIXME: This is totally not safe and likely to break.
     //// PubSub socket, which will then allow me to send it to a websocket proxy
-    //std::cout << std::string((char *)message.data(), message.size());
     // FIXME: Should terminate on shutdown message from parent
     mPublisherp->send(message);
   }

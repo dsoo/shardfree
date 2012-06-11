@@ -8,8 +8,6 @@ namespace ShardFree
 
 class Logger;
 
-#define SFLOG ShardFree::Log(logger()).get()
-
 class Worker
 {
   public:

@@ -46,29 +46,31 @@ void LogWriter::run()
     }
     catch(...)
     {
-      std::cout << "Errno:" << errno << std::endl;
-      switch(errno) {
+      std::cerr << "Errno:" << errno;
+      switch(errno)
+      {
         case EINVAL:
-          std::cout << "EINVAL" << std::endl;
+          std::cerr << "EINVAL";
           break;
         case EPROTONOSUPPORT:
-          std::cout << "EPROTONOSUPPORT" << std::endl;
+          std::cerr << "EPROTONOSUPPORT";
           break;
         case ENOCOMPATPROTO:
-          std::cout << "ENOCOMPATPROTO" << std::endl;
+          std::cerr << "ENOCOMPATPROTO";
           break;
         case ETERM:
-          std::cout << "ETERM" << std::endl;
+          std::cerr << "ETERM";
           break;
         case ENOTSOCK:
-          std::cout << "ENOTSOCK" << std::endl;
+          std::cerr << "ENOTSOCK";
           break;
         case EMTHREAD:
-          std::cout << "EMTHREAD" << std::endl;
+          std::cerr << "EMTHREAD";
           break;
         default:
-          std::cout << "UNKNOWN ERROR" << std::endl;
+          std::cerr << "UNKNOWN ERROR";
       }
+      std::cerr << std::endl;
       sleep(1);
     }
   }
