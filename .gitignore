@@ -3,3 +3,5 @@ sf-client
 sf-server
 dependencies.mk
 build/
+log-client
+server
