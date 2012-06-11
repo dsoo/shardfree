@@ -2,10 +2,10 @@
 # and it matters.
 
 CXXFILES:=$(shell find . -type f -name '*.cc' -print)
-OUTPUTS = build/sf-server build/sf-log-client
+OUTPUTS = server log-client
 
-SERVER_OBJECTS = sf-server.o sf-worker.o sf-simulator.o sf-global.o sf-logger.o sf-log-publisher.o sf-log-writer.o sf-presence.o sf-log-writer-websocket.o
-CLIENT_OBJECTS = sf-log-client.o sf-global.o sf-log-writer.o
+SERVER_OBJECTS = server.o worker.o simulator.o global.o logger.o log-publisher.o log-writer.o presence.o log-writer-websocket.o
+CLIENT_OBJECTS = log-client.o global.o log-writer.o
 OBJECTS = $(SERVER_OBJECTS)
 BUILD_DIR = build
 
@@ -22,10 +22,10 @@ clean:
 	rm -rf $(BUILD_DIR)
 	rm -rf $(OBJECTS)
 
-build/sf-server: $(SERVER_OBJECTS)
+server: $(SERVER_OBJECTS)
 	g++ $(CPPFLAGS) $(LFLAGS) $^ -o $@
 
-build/sf-log-client: $(CLIENT_OBJECTS)
+log-client: $(CLIENT_OBJECTS)
 	g++ $(CPPFLAGS) $(LFLAGS) $^ -o $@
 
 depend:

@@ -1,20 +1,23 @@
-#ifndef SHARDFREE_SF_LOG_PUBLISHER_H_
-#define SHARDFREE_SF_LOG_PUBLISHER_H_
+#ifndef SHARDFREE_LOG_PUBLISHER_H_
+#define SHARDFREE_LOG_PUBLISHER_H_
 
 #include <string>
 #include <zmq.hpp>
 
-class SFLogPublisher
+namespace ShardFree
+{
+
+class LogPublisher
 {
   public:
-    SFLogPublisher(const std::string &collector_name = "inproc://logger",
+    LogPublisher(const std::string &collector_name = "inproc://logger",
                    const std::string &publisher_name = "inproc://logpub");
-    virtual ~SFLogPublisher();
-    
+    virtual ~LogPublisher();
+
     void run();
 
   private:
-    static void *runWorker(void *argp);    
+    static void *runWorker(void *argp);
 
   private:
     std::string mCollectorName;
@@ -23,4 +26,6 @@ class SFLogPublisher
     zmq::socket_t *mPublisherp;
 };
 
-#endif // SHARDFREE_SF_LOG_PUBLISHER_H_
+}
+
+#endif // SHARDFREE_LOG_PUBLISHER_H_

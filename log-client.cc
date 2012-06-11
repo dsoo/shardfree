@@ -9,8 +9,8 @@
 #include <unistd.h>
 #include <zmq.hpp>
 
-#include "sf-global.h"
-#include "sf-log-writer.h"
+#include "global.h"
+#include "log-writer.h"
 
 //
 // FIXME: Do all the memory management stuff properly.
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
   gZMQContextp = new zmq::context_t(1);
 
   // Spawn our log output worker
-  SFLogWriter log_writer(argv[1]);
+  ShardFree::LogWriter log_writer(argv[1]);
   while (1)
   {
     sleep(1);

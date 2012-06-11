@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "sf-global.h"
-#include "sf-logger.h"
-#include "sf-simulator.h"
+#include "global.h"
+#include "logger.h"
+#include "simulator.h"
 
 #include <vector>
 
@@ -18,10 +18,13 @@
 //    std::vector<zmq::socket_t&> mSockets;
 //};
 
+namespace ShardFree
+{
+
 //
 // Instance methods
 //
-SFSimulator::SFSimulator(const std::string &id) : SFWorker(id), mCounter(0)
+Simulator::Simulator(const std::string &id) : Worker(id), mCounter(0)
 {
   // Start up SUB socket to listen to trusted neighbors
   // Start up SUB socket to listen to clients
@@ -30,13 +33,13 @@ SFSimulator::SFSimulator(const std::string &id) : SFWorker(id), mCounter(0)
   // Connect to neighbors
 }
 
-SFSimulator::~SFSimulator()
+Simulator::~Simulator()
 {
   delete mPubSocketp;
   mPubSocketp = NULL;
 }
 
-void SFSimulator::run()
+void Simulator::run()
 {
   // Set up the PUB socket where you push all your output
   mPubSocketp = new zmq::socket_t(context(), ZMQ_PUB);
@@ -70,7 +73,7 @@ void SFSimulator::run()
   }
 }
 
-void SFSimulator::collect()
+void Simulator::collect()
 {
     // Listen to all of your neighbor's subs until you get all of the updates for the
     // current frame.
@@ -102,7 +105,7 @@ void SFSimulator::collect()
     return;
 }
 
-void SFSimulator::simulate()
+void Simulator::simulate()
 {
   sleep(1);
   SFLOG << "Testy testy " << mCounter;
@@ -111,8 +114,10 @@ void SFSimulator::simulate()
   return;
 }
 
-void SFSimulator::resolveAndPush()
+void Simulator::resolveAndPush()
 {
   // Iterate through all updates, resolving conflicts and applying to data structure
   // Push updates out to anybody that's listening
+}
+
 }

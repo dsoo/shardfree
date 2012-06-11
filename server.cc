@@ -9,13 +9,13 @@
 #include <unistd.h>
 #include <zmq.hpp>
 
-#include "sf-global.h"
-#include "sf-logger.h"
-#include "sf-log-publisher.h"
-#include "sf-log-writer.h"
-#include "sf-log-writer-websocket.h"
-#include "sf-presence.h"
-#include "sf-simulator.h"
+#include "global.h"
+#include "logger.h"
+#include "log-publisher.h"
+#include "log-writer.h"
+#include "log-writer-websocket.h"
+#include "presence.h"
+#include "simulator.h"
 
 //
 // FIXME: Do all the memory management stuff properly.
@@ -27,28 +27,28 @@ int main()
   gZMQContextp = new zmq::context_t(1);
 
   // Spawn our log output worker
-  SFLogPublisher log_publisher("inproc://logger", "tcp://*:5555");
-  SFLogWriter log_writer("tcp://localhost:5555");
-  SFLogWriterWebsocket log_writer_websocket("tcp://localhost:5555");
-  SFLogger logger;
+  ShardFree::LogPublisher log_publisher("inproc://logger", "inproc://logpub");
+  ShardFree::LogWriter log_writer("inproc://logpub");
+  ShardFree::LogWriterWebsocket log_writer_websocket("inproc://logpub");
+  ShardFree::Logger logger;
 
   // Spawn the presence server
-  SFPresence presence;
+  ShardFree::Presence presence;
   presence.start();
 
-  //// Test talking to the presence service
-  //SFPresenceClient presence_client;
-  //
-  //presenceClient->sendRequest();
+  // Test talking to the presence service
+  sleep(1);
+  ShardFree::PresenceClient presence_client;
+  presence_client.sendRequest();
 
 
 
-  std::vector<SFWorker *> workers;
+  std::vector<ShardFree::Worker *> workers;
   //  Launch pool of worker threads, same as number of CPUs
   for (int thread_nbr = 0; thread_nbr != 1; thread_nbr++) {
     std::ostringstream ss;
     ss << thread_nbr;
-    SFSimulator *simulatorp = new SFSimulator(ss.str());
+    ShardFree::Simulator *simulatorp = new ShardFree::Simulator(ss.str());
     simulatorp->start();
     workers.push_back(simulatorp);
   }
@@ -57,7 +57,7 @@ int main()
   while (1)
   {
     sleep(1);
-    Log(logger).get() << "Waity waity " << counter;
+    ShardFree::Log(logger).get() << "Waity waity " << counter;
     ++counter;
   }
   //

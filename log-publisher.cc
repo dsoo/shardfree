@@ -1,8 +1,11 @@
 #include <pthread.h>
-#include "sf-global.h"
-#include "sf-log-publisher.h"
+#include "global.h"
+#include "log-publisher.h"
 
-SFLogPublisher::SFLogPublisher(const std::string &collector_name, const std::string &publisher_name) :
+namespace ShardFree
+{
+
+LogPublisher::LogPublisher(const std::string &collector_name, const std::string &publisher_name) :
   mCollectorName(collector_name),
   mPublisherName(publisher_name),
   mCollectorp(NULL),
@@ -22,7 +25,7 @@ SFLogPublisher::SFLogPublisher(const std::string &collector_name, const std::str
   ready_socket.recv(&message);
 }
 
-SFLogPublisher::~SFLogPublisher()
+LogPublisher::~LogPublisher()
 {
   delete mCollectorp;
   mCollectorp = NULL;
@@ -30,7 +33,7 @@ SFLogPublisher::~SFLogPublisher()
   mPublisherp = NULL;
 }
 
-void SFLogPublisher::run()
+void LogPublisher::run()
 {
   //std::cout << "Starting up publisher" << std::endl;
   mCollectorp = new zmq::socket_t(*gZMQContextp, ZMQ_PULL);
@@ -59,9 +62,11 @@ void SFLogPublisher::run()
   }
 }
 
-void *SFLogPublisher::runWorker(void *argp)
+void *LogPublisher::runWorker(void *argp)
 {
-  auto log_publisherp = (SFLogPublisher *)argp;
+  auto log_publisherp = (LogPublisher *)argp;
   log_publisherp->run();
   return 0;
+}
+
 }

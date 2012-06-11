@@ -3,8 +3,11 @@
 
 #include "libwebsockets.h"
 
-#include "sf-global.h"
-#include "sf-log-writer-websocket.h"
+#include "global.h"
+#include "log-writer-websocket.h"
+
+namespace ShardFree
+{
 
 static int callback_http(struct libwebsocket_context * context,
                          struct libwebsocket *wsi,
@@ -102,7 +105,7 @@ callback_log(struct libwebsocket_context * context,
 }
 
 
-SFLogWriterWebsocket::SFLogWriterWebsocket(const std::string &publisher_name) :
+LogWriterWebsocket::LogWriterWebsocket(const std::string &publisher_name) :
   mPublisherName(publisher_name),
   mPublisherp(NULL)
 {
@@ -120,13 +123,13 @@ SFLogWriterWebsocket::SFLogWriterWebsocket(const std::string &publisher_name) :
   ready_socket.recv(&message);
 }
 
-SFLogWriterWebsocket::~SFLogWriterWebsocket()
+LogWriterWebsocket::~LogWriterWebsocket()
 {
   delete mPublisherp;
   mPublisherp = NULL;
 }
 
-void SFLogWriterWebsocket::run()
+void LogWriterWebsocket::run()
 {
   mPublisherp = new zmq::socket_t(*gZMQContextp, ZMQ_SUB);
   mPublisherp->setsockopt(ZMQ_SUBSCRIBE, "", 0);
@@ -223,9 +226,11 @@ void SFLogWriterWebsocket::run()
   }
 }
 
-void *SFLogWriterWebsocket::runWorker(void *argp)
+void *LogWriterWebsocket::runWorker(void *argp)
 {
-  auto log_writerp = (SFLogWriterWebsocket *)argp;
+  auto log_writerp = (LogWriterWebsocket *)argp;
   log_writerp->run();
   return 0;
+}
+
 }

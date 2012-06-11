@@ -1,5 +1,5 @@
-#ifndef SHARDFREE_SF_ZMQ_H_
-#define SHARDFREE_SF_ZMQ_H_
+#ifndef SHARDFREE_ZMQ_H_
+#define SHARDFREE_ZMQ_H_
 
 //
 // Better bindings for ZeroMQ for C++ than the default ones, which are not

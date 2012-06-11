@@ -1,4 +1,4 @@
 #include <zmq.hpp>
-#include "sf-global.h"
+#include "global.h"
 
 zmq::context_t *gZMQContextp = NULL;

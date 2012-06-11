@@ -1,5 +1,5 @@
-#ifndef SHARDFREE_SF_LOGGER_H_
-#define SHARDFREE_SF_LOGGER_H_
+#ifndef SHARDFREE_LOGGER_H_
+#define SHARDFREE_LOGGER_H_
 
 #include <sstream>
 
@@ -8,16 +8,18 @@
 //
 //
 
-class SFLogger;
+namespace ShardFree
+{
+class Logger;
 
 class Log
 {
 public:
-  Log(const SFLogger &logger);
+  Log(const ShardFree::Logger &logger);
   virtual ~Log();
   std::ostringstream& get();
 private:
-  const SFLogger &logger;
+  const ShardFree::Logger &logger;
   std::ostringstream mOSS;
 private:
   Log(const Log&);
@@ -26,11 +28,11 @@ private:
 
 // Usage
 
-class SFLogger
+class Logger
 {
   public:
-    SFLogger(const std::string &collector_name = "inproc://logger");
-    virtual ~SFLogger();
+    Logger(const std::string &collector_name = "inproc://logger");
+    virtual ~Logger();
 
     void setPrefix(const std::string &prefix);
     void output(const std::string &str) const;
@@ -38,5 +40,6 @@ class SFLogger
     zmq::socket_t *mCollectorp;
     std::string mPrefix;
 };
+}
 
-#endif // SHARDFREE_SF_LOGGER_H_
+#endif // SHARDFREE_LOGGER_H_

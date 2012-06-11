@@ -1,10 +1,13 @@
 #include <pthread.h>
 #include <iostream>
 
-#include "sf-global.h"
-#include "sf-log-writer.h"
+#include "global.h"
+#include "log-writer.h"
 
-SFLogWriter::SFLogWriter(const std::string &publisher_name) :
+namespace ShardFree
+{
+
+LogWriter::LogWriter(const std::string &publisher_name) :
   mPublisherName(publisher_name),
   mPublisherp(NULL)
 {
@@ -22,13 +25,13 @@ SFLogWriter::SFLogWriter(const std::string &publisher_name) :
   ready_socket.recv(&message);
 }
 
-SFLogWriter::~SFLogWriter()
+LogWriter::~LogWriter()
 {
   delete mPublisherp;
   mPublisherp = NULL;
 }
 
-void SFLogWriter::run()
+void LogWriter::run()
 {
   mPublisherp = new zmq::socket_t(*gZMQContextp, ZMQ_SUB);
   mPublisherp->setsockopt(ZMQ_SUBSCRIBE, "", 0);
@@ -90,9 +93,11 @@ void SFLogWriter::run()
   }
 }
 
-void *SFLogWriter::runWorker(void *argp)
+void *LogWriter::runWorker(void *argp)
 {
-  auto log_writerp = (SFLogWriter *)argp;
+  auto log_writerp = (LogWriter *)argp;
   log_writerp->run();
   return 0;
+}
+
 }

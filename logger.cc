@@ -1,11 +1,12 @@
 #include <zmq.hpp>
-#include "sf-logger.h"
-#include "sf-global.h"
+#include "logger.h"
+#include "global.h"
 
-
+namespace ShardFree
+{
 // Logging implementation cribbed (and simplified) from here: http://www.drdobbs.com/cpp/201804215
 
-Log::Log(const SFLogger &logger) : logger(logger)
+Log::Log(const ShardFree::Logger &logger) : logger(logger)
 {
 }
 
@@ -23,7 +24,7 @@ Log::~Log()
   }
 }
 
-SFLogger::SFLogger(const std::string &collector_name)
+Logger::Logger(const std::string &collector_name)
 {
   mCollectorp = new zmq::socket_t(*gZMQContextp, ZMQ_PUSH);
   mCollectorp->connect(collector_name.c_str());
@@ -61,21 +62,23 @@ SFLogger::SFLogger(const std::string &collector_name)
   //}
 }
 
-SFLogger::~SFLogger()
+Logger::~Logger()
 {
   delete mCollectorp;
   mCollectorp = NULL;
 }
 
-void SFLogger::setPrefix(const std::string &prefix)
+void Logger::setPrefix(const std::string &prefix)
 {
   mPrefix = prefix;
 }
 
-void SFLogger::output(const std::string &str) const
+void Logger::output(const std::string &str) const
 {
   zmq::message_t line(str.size() + mPrefix.size());
   memcpy((void *)line.data(), mPrefix.data(), mPrefix.size());
   memcpy((void *)((char *)line.data() + mPrefix.size()), str.data(), str.size());
   mCollectorp->send(line);
+}
+
 }
