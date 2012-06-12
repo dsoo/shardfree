@@ -64,6 +64,7 @@ void Logger::setPrefix(const std::string &prefix)
 
 void Logger::output(const std::string &str) const
 {
+  // FIXME: These memcpys are sketchy and ugly
   zmq::message_t line(str.size() + mPrefix.size());
   memcpy((void *)line.data(), mPrefix.data(), mPrefix.size());
   memcpy((void *)((char *)line.data() + mPrefix.size()), str.data(), str.size());

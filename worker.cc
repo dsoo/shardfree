@@ -16,7 +16,7 @@ void *Worker::runWorker(void *argp)
   Logger::get().setPrefix(workerp->mID + ":");
 
   workerp->init();
-  // We're initialized, we can let the main thread go.
+  // We're initialized, we can let the calling thread go.
   {
     zmq::socket_t sender(getZMQContext(), ZMQ_PUSH);
     sender.connect((std::string("inproc://ready") + workerp->mID).c_str());
