@@ -78,7 +78,7 @@ void LogWriter::run()
 
 void *LogWriter::runWorker(void *argp)
 {
-  auto log_writerp = (LogWriter *)argp;
+  LogWriter *log_writerp = (LogWriter *)argp;
   log_writerp->run();
   return 0;
 }

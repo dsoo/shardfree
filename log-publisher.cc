@@ -60,7 +60,7 @@ void LogPublisher::run()
 
 void *LogPublisher::runWorker(void *argp)
 {
-  auto log_publisherp = (LogPublisher *)argp;
+  LogPublisher *log_publisherp = (LogPublisher *)argp;
   log_publisherp->run();
   return 0;
 }

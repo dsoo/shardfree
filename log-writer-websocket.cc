@@ -209,7 +209,7 @@ void LogWriterWebsocket::run()
 
 void *LogWriterWebsocket::runWorker(void *argp)
 {
-  auto log_writerp = (LogWriterWebsocket *)argp;
+  LogWriterWebsocket *log_writerp = (LogWriterWebsocket *)argp;
   log_writerp->run();
   return 0;
 }
