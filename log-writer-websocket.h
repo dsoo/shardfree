@@ -17,7 +17,7 @@ namespace ShardFree
 class LogWriterWebsocket : public Thread
 {
   public:
-    LogWriterWebsocket(const std::string &publisher_name = "inproc://logpub");
+    LogWriterWebsocket(const std::string &publisher_name = "inproc://logpub", const int port = 7890);
     virtual ~LogWriterWebsocket();
 
   protected:
@@ -27,8 +27,7 @@ class LogWriterWebsocket : public Thread
   private:
     std::string mPublisherName;
     zmq::socket_t *mPublisherp;
-
-    struct libwebsocket_context *mWSContextp;
+    int mPort;
 };
 
 }

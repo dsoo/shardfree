@@ -115,10 +115,11 @@ static int callback_log(struct libwebsocket_context * context,
 }
 
 
-LogWriterWebsocket::LogWriterWebsocket(const std::string &publisher_name) :
+LogWriterWebsocket::LogWriterWebsocket(const std::string &publisher_name, const int port) :
   Thread("LogWriterWebsocket"),
   mPublisherName(publisher_name),
-  mPublisherp(NULL)
+  mPublisherp(NULL),
+  mPort(port)
 {
 }
 
@@ -154,8 +155,6 @@ void LogWriterWebsocket::init()
 
 void LogWriterWebsocket::run()
 {
-
-  int port = 7681;
   int opts = 0;
   const char *interface = NULL;
   struct libwebsocket_protocols protocols[] = {
@@ -178,9 +177,10 @@ void LogWriterWebsocket::run()
 
   // Initialize the Websocket context
   struct libwebsocket_context *context = NULL;
-  context = libwebsocket_create_context(port, interface, protocols,
+  context = libwebsocket_create_context(mPort, interface, protocols,
                                         libwebsocket_internal_extensions,
                                         NULL, NULL, NULL, -1, -1, opts);
+  SFLOG << "Opened logging websocket on port " << mPort;
   while (1)
   {
     // Poll for incoming connections from websocket listeners and
