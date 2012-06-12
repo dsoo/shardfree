@@ -46,31 +46,12 @@ void LogWriter::run()
     }
     catch(...)
     {
-      std::cerr << "Errno:" << errno;
-      switch(errno)
-      {
-        case EINVAL:
-          std::cerr << "EINVAL";
-          break;
-        case EPROTONOSUPPORT:
-          std::cerr << "EPROTONOSUPPORT";
-          break;
-        case ENOCOMPATPROTO:
-          std::cerr << "ENOCOMPATPROTO";
-          break;
-        case ETERM:
-          std::cerr << "ETERM";
-          break;
-        case ENOTSOCK:
-          std::cerr << "ENOTSOCK";
-          break;
-        case EMTHREAD:
-          std::cerr << "EMTHREAD";
-          break;
-        default:
-          std::cerr << "UNKNOWN ERROR";
-      }
-      std::cerr << std::endl;
+      // FIXME: If the logwriter can't talk to the publisher
+      // we need to be more aggressive about fixing this or dying, since
+      // this means that logging won't be working.
+      // Note that we're using cerr, as we assume that the standard
+      // logger won't display any useful output since we're the writer.
+      std::cerr << getZMQErrorString() << std::endl;
       sleep(1);
     }
   }

@@ -62,30 +62,7 @@ PresenceClient::PresenceClient(const std::string &endpoint) : mPresenceReqp(NULL
     }
     catch(...)
     {
-      SFLOG << "Errno:" << errno;
-      switch(errno)
-      {
-        case EINVAL:
-          SFLOG << "EINVAL";
-          break;
-        case EPROTONOSUPPORT:
-          SFLOG << "EPROTONOSUPPORT";
-          break;
-        case ENOCOMPATPROTO:
-          SFLOG << "ENOCOMPATPROTO";
-          break;
-        case ETERM:
-          SFLOG << "ETERM";
-          break;
-        case ENOTSOCK:
-          SFLOG << "ENOTSOCK";
-          break;
-        case EMTHREAD:
-          SFLOG << "EMTHREAD";
-          break;
-        default:
-          SFLOG << "UNKNOWN ERROR";
-      }
+      SFLOG << getZMQErrorString();
       sleep(1);
     }
   }

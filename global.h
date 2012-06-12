@@ -6,6 +6,8 @@
 namespace ShardFree
 {
   zmq::context_t &getZMQContext();
+  std::string getZMQErrorString();
 }
+
 
 #endif // SHARDFREE_GLOBAL_H
