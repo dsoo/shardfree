@@ -6,11 +6,12 @@
 </head>
 
 <body>
-  <div id=log>
-  </div>
   <div id=wsdi_status>Not initialized</div></td>
+  <code id=log>
+  </code>
 
   <script>
+    // Cribbed from the libwebsocket example. Needs some serious cleanup.
 
     var pos = 0;
 
@@ -19,10 +20,8 @@
       var pcol;
       var u = document.URL;
 
-      /*
-       * We open the websocket encrypted if this page came on an
-       * https:// url itself, otherwise unencrypted
-       */
+      // We open the websocket encrypted if this page came on an
+      // https:// url itself, otherwise unencrypted
 
       if (u.substring(0, 5) == "https") {
         pcol = "wss://";
@@ -39,16 +38,13 @@
     }
 
 
-  document.getElementById("log").textContent = get_appropriate_ws_url();
-
+    document.getElementById("log").textContent = get_appropriate_ws_url();
     var socket_log;
 
     if (typeof MozWebSocket != "undefined") {
-      socket_log = new MozWebSocket(get_appropriate_ws_url(),
-             "log");
+      socket_log = new MozWebSocket(get_appropriate_ws_url(), "log");
     } else {
-      socket_log = new WebSocket(get_appropriate_ws_url(),
-             "log");
+      socket_log = new WebSocket(get_appropriate_ws_url(), "log");
     }
 
 
@@ -60,7 +56,10 @@
 
       socket_log.onmessage =function got_packet(msg) {
         console.log('Msg data:' + msg.data)
-        document.getElementById("log").textContent = msg.data + "\n";
+        var div = document.createElement('div');
+        var text = document.createTextNode(msg.data + '\n')
+        div.appendChild(text);
+        document.getElementById("log").appendChild(div)
       }
 
       socket_log.onclose = function(){
