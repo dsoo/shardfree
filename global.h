@@ -3,7 +3,9 @@
 
 #include <zmq.hpp>
 
-// FIXME: This should be a singleton instead of a global.
-extern zmq::context_t *gZMQContextp;
+namespace ShardFree
+{
+  zmq::context_t &getZMQContext();
+}
 
 #endif // SHARDFREE_GLOBAL_H

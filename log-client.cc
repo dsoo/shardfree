@@ -19,7 +19,6 @@
 int main(int argc, char *argv[])
 {
   //  Prepare our context and sockets
-  gZMQContextp = new zmq::context_t(1);
 
   // Spawn our log output worker
   ShardFree::LogWriter log_writer(argv[1]);

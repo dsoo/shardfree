@@ -15,6 +15,8 @@ class Worker
     virtual ~Worker();
 
     void start();
+
+    virtual void init();
     virtual void run() = 0;
 
     const ShardFree::Logger &logger() const;
@@ -22,12 +24,11 @@ class Worker
   protected:
     zmq::context_t &context() const;
   private:
-    void init();
 
     static void *runWorker(void *argp);
   private:
     std::string mID;
-    zmq::context_t *mContextp;
+    zmq::context_t &mContext;
     bool mLogging;
     ShardFree::Logger *mLoggerp;
 };

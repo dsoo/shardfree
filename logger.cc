@@ -15,9 +15,7 @@ Log::Log()
     // Initialize the per-thread logger
     // FIXME: Need to clean this up when the thread goes away, somehow.
     tLoggerp = new ShardFree::Logger;
-
     // FIXME: Would be nice to set the prefix to something useful.
-    //mLoggerp->setPrefix(mID + ":");
   }
 }
 
@@ -37,7 +35,7 @@ Log::~Log()
 
 Logger::Logger(const std::string &collector_name)
 {
-  mCollectorp = new zmq::socket_t(*gZMQContextp, ZMQ_PUSH);
+  mCollectorp = new zmq::socket_t(getZMQContext(), ZMQ_PUSH);
 
   // FIXME: Properly handle errors for this connect
   mCollectorp->connect(collector_name.c_str());

@@ -14,7 +14,7 @@ LogPublisher::LogPublisher(const std::string &collector_name, const std::string 
   // Create a worker thread that listens to the logger socket and prints the output
   pthread_t worker;
 
-  zmq::socket_t ready_socket(*gZMQContextp, ZMQ_PULL);
+  zmq::socket_t ready_socket(getZMQContext(), ZMQ_PULL);
   ready_socket.bind("inproc://logpubready");
 
   pthread_create (&worker, NULL, runWorker, this);
@@ -34,14 +34,14 @@ LogPublisher::~LogPublisher()
 
 void LogPublisher::run()
 {
-  mCollectorp = new zmq::socket_t(*gZMQContextp, ZMQ_PULL);
+  mCollectorp = new zmq::socket_t(getZMQContext(), ZMQ_PULL);
   mCollectorp->bind(mCollectorName.c_str());
-  mPublisherp = new zmq::socket_t(*gZMQContextp, ZMQ_PUB);
+  mPublisherp = new zmq::socket_t(getZMQContext(), ZMQ_PUB);
   mPublisherp->bind(mPublisherName.c_str());
 
   // Now that we're bound, tell the main thread that we're ready for use
   {
-    zmq::socket_t sender(*gZMQContextp, ZMQ_PUSH);
+    zmq::socket_t sender(getZMQContext(), ZMQ_PUSH);
     sender.connect("inproc://logpubready");
     zmq::message_t message;
     sender.send(message);

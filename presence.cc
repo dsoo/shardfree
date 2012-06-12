@@ -51,7 +51,7 @@ void Presence::run()
 PresenceClient::PresenceClient(const std::string &endpoint) : mPresenceReqp(NULL)
 {
   SFLOG << "Presence client connecting to " << endpoint;
-  mPresenceReqp = new zmq::socket_t(*gZMQContextp, ZMQ_REQ);
+  mPresenceReqp = new zmq::socket_t(getZMQContext(), ZMQ_REQ);
   bool connected = false;
   while (!connected)
   {

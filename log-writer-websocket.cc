@@ -114,7 +114,7 @@ LogWriterWebsocket::LogWriterWebsocket(const std::string &publisher_name) :
   pthread_t worker;
 
   // FIXME: This should be uniquely named
-  zmq::socket_t ready_socket(*gZMQContextp, ZMQ_PULL);
+  zmq::socket_t ready_socket(getZMQContext(), ZMQ_PULL);
   ready_socket.bind("inproc://writerwebsocketready");
 
   pthread_create (&worker, NULL, runWorker, this);
@@ -132,7 +132,7 @@ LogWriterWebsocket::~LogWriterWebsocket()
 
 void LogWriterWebsocket::run()
 {
-  mPublisherp = new zmq::socket_t(*gZMQContextp, ZMQ_SUB);
+  mPublisherp = new zmq::socket_t(getZMQContext(), ZMQ_SUB);
   mPublisherp->setsockopt(ZMQ_SUBSCRIBE, "", 0);
 
   bool connected = false;
@@ -202,7 +202,7 @@ void LogWriterWebsocket::run()
 
   // Now that we're bound, tell the main thread that we're ready for use
   {
-    zmq::socket_t sender(*gZMQContextp, ZMQ_PUSH);
+    zmq::socket_t sender(getZMQContext(), ZMQ_PUSH);
     sender.connect("inproc://writerwebsocketready");
     zmq::message_t message;
     sender.send(message);
