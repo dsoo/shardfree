@@ -11,7 +11,7 @@ namespace ShardFree
 //
 // Instance methods
 //
-Presence::Presence(const std::string &id) : Worker(id)
+Presence::Presence(const std::string &id) : Thread(id)
 {
 }
 
@@ -21,11 +21,14 @@ Presence::~Presence()
   mRequestSocketp = NULL;
 }
 
-void Presence::run()
+void Presence::init()
 {
   mRequestSocketp = new zmq::socket_t(context(), ZMQ_REP);
   mRequestSocketp->bind(std::string("inproc://presence").c_str());
+}
 
+void Presence::run()
+{
   SFLOG << "Presence server waiting for requests";
   while(1)
   {

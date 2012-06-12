@@ -1,17 +1,19 @@
 #ifndef SHARDFREE_PRESENCE_H_
 #define SHARDFREE_PRESENCE_H_
 
-#include "worker.h"
+#include "thread.h"
 
 namespace ShardFree
 {
 
-class Presence : public Worker
+class Presence : public Thread
 {
   public:
     Presence(const std::string &id = "presence");
     virtual ~Presence();
 
+  protected:
+    /*virtual*/ void init();
     /*virtual*/ void run();
   private:
     zmq::socket_t *mRequestSocketp;

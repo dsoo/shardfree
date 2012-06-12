@@ -18,7 +18,7 @@ LogWriter::LogWriter(const std::string &publisher_name) :
   // FIXME: This should be uniquely named
   ready_socket.bind("inproc://writerready");
 
-  pthread_create (&worker, NULL, runWorker, this);
+  pthread_create (&worker, NULL, runThread, this);
   zmq::message_t message;
 
   // Waits until ZMQ sockets are abound before returning.
@@ -76,7 +76,7 @@ void LogWriter::run()
   }
 }
 
-void *LogWriter::runWorker(void *argp)
+void *LogWriter::runThread(void *argp)
 {
   LogWriter *log_writerp = (LogWriter *)argp;
   log_writerp->run();

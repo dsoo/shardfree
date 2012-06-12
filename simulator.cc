@@ -24,7 +24,7 @@ namespace ShardFree
 //
 // Instance methods
 //
-Simulator::Simulator(const std::string &id) : Worker(id), mCounter(0)
+Simulator::Simulator(const std::string &id) : Thread(id), mCounter(0)
 {
   // Start up SUB socket to listen to trusted neighbors
   // Start up SUB socket to listen to clients
@@ -37,6 +37,10 @@ Simulator::~Simulator()
 {
   delete mPubSocketp;
   mPubSocketp = NULL;
+}
+
+void Simulator::init()
+{
 }
 
 void Simulator::run()

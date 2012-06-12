@@ -17,7 +17,7 @@ class LogWriter
 
     void run();
   private:
-    static void *runWorker(void *argp);
+    static void *runThread(void *argp);
 
   private:
     std::string mPublisherName;

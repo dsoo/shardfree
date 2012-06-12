@@ -17,7 +17,7 @@ LogPublisher::LogPublisher(const std::string &collector_name, const std::string 
   zmq::socket_t ready_socket(getZMQContext(), ZMQ_PULL);
   ready_socket.bind("inproc://logpubready");
 
-  pthread_create (&worker, NULL, runWorker, this);
+  pthread_create (&worker, NULL, runThread, this);
   zmq::message_t message;
 
   // Waits until ZMQ sockets are abound before returning.
@@ -58,7 +58,7 @@ void LogPublisher::run()
   }
 }
 
-void *LogPublisher::runWorker(void *argp)
+void *LogPublisher::runThread(void *argp)
 {
   LogPublisher *log_publisherp = (LogPublisher *)argp;
   log_publisherp->run();

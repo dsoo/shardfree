@@ -39,7 +39,7 @@ int main()
   ShardFree::PresenceClient presence_client;
   presence_client.sendRequest();
 
-  std::vector<ShardFree::Worker *> workers;
+  std::vector<ShardFree::Thread *> workers;
   //  Launch pool of worker threads
   for (int worker_id = 0; worker_id < 4; ++worker_id) {
     std::ostringstream id_str;

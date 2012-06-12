@@ -2,17 +2,19 @@
 #define SHARDFREE_SIMULATOR_H_
 
 #include <vector>
-#include "worker.h"
+#include "thread.h"
 
 namespace ShardFree
 {
 
-class Simulator : public Worker
+class Simulator : public Thread
 {
   public:
     Simulator(const std::string &id);
     virtual ~Simulator();
 
+  protected:
+    /*virtual*/ void init();
     /*virtual*/ void run();
   private:
     void collect();

@@ -126,7 +126,7 @@ LogWriterWebsocket::LogWriterWebsocket(const std::string &publisher_name) :
   zmq::socket_t ready_socket(getZMQContext(), ZMQ_PULL);
   ready_socket.bind("inproc://writerwebsocketready");
 
-  pthread_create (&worker, NULL, runWorker, this);
+  pthread_create (&worker, NULL, runThread, this);
   zmq::message_t message;
 
   // Waits until ZMQ sockets are abound before returning.
@@ -216,7 +216,7 @@ void LogWriterWebsocket::run()
   }
 }
 
-void *LogWriterWebsocket::runWorker(void *argp)
+void *LogWriterWebsocket::runThread(void *argp)
 {
   LogWriterWebsocket *log_writerp = (LogWriterWebsocket *)argp;
   log_writerp->run();
