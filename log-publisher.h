@@ -2,22 +2,22 @@
 #define SHARDFREE_LOG_PUBLISHER_H_
 
 #include <string>
-#include <zmq.hpp>
+
+#include "thread.h"
 
 namespace ShardFree
 {
 
-class LogPublisher
+class LogPublisher : public Thread
 {
   public:
     LogPublisher(const std::string &collector_name = "inproc://logger",
                    const std::string &publisher_name = "inproc://logpub");
     virtual ~LogPublisher();
 
-    void run();
-
-  private:
-    static void *runThread(void *argp);
+  protected:
+    /*virtual*/ void init();
+    /*virtual*/ void run();
 
   private:
     std::string mCollectorName;

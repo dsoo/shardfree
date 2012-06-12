@@ -22,8 +22,7 @@ class Thread
     virtual void run() = 0;
 
   private:
-    Thread(const Thread &); // No copy constructor
-
+    Thread(const Thread &); // No copy constructor, do not implement.
 
   protected:
     zmq::context_t &context() const;

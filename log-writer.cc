@@ -8,21 +8,10 @@ namespace ShardFree
 {
 
 LogWriter::LogWriter(const std::string &publisher_name) :
+  Thread("LogWriter"),
   mPublisherName(publisher_name),
   mPublisherp(NULL)
 {
-  // Create a worker thread that listens to the logger socket and prints the output
-  pthread_t worker;
-
-  zmq::socket_t ready_socket(getZMQContext(), ZMQ_PULL);
-  // FIXME: This should be uniquely named
-  ready_socket.bind("inproc://writerready");
-
-  pthread_create (&worker, NULL, runThread, this);
-  zmq::message_t message;
-
-  // Waits until ZMQ sockets are abound before returning.
-  ready_socket.recv(&message);
 }
 
 LogWriter::~LogWriter()
@@ -31,7 +20,7 @@ LogWriter::~LogWriter()
   mPublisherp = NULL;
 }
 
-void LogWriter::run()
+void LogWriter::init()
 {
   mPublisherp = new zmq::socket_t(getZMQContext(), ZMQ_SUB);
   mPublisherp->setsockopt(ZMQ_SUBSCRIBE, "", 0);
@@ -55,17 +44,12 @@ void LogWriter::run()
       sleep(1);
     }
   }
+}
 
-
-  // Now that we're bound, tell the main thread that we're ready for use
+void LogWriter::run()
+{
+  while (1)
   {
-    zmq::socket_t sender(getZMQContext(), ZMQ_PUSH);
-    sender.connect("inproc://writerready");
-    zmq::message_t message;
-    sender.send(message);
-  }
-
-  while (1) {
     zmq::message_t message;
     mPublisherp->recv(&message);
 
@@ -74,13 +58,6 @@ void LogWriter::run()
     std::cout << std::string((char *)message.data(), message.size());
     // FIXME: Should terminate on shutdown message from parent
   }
-}
-
-void *LogWriter::runThread(void *argp)
-{
-  LogWriter *log_writerp = (LogWriter *)argp;
-  log_writerp->run();
-  return 0;
 }
 
 }

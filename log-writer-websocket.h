@@ -6,25 +6,29 @@
 #include <string>
 #include <zmq.hpp>
 
+#include "thread.h"
+
 namespace ShardFree
 {
 
 //
 // Outputs logs from the logger asynchronously on a separate thread.
 //
-class LogWriterWebsocket
+class LogWriterWebsocket : public Thread
 {
   public:
     LogWriterWebsocket(const std::string &publisher_name = "inproc://logpub");
     virtual ~LogWriterWebsocket();
 
-    void run();
-  private:
-    static void *runThread(void *argp);
+  protected:
+    /*virtual*/ void init();
+    /*virtual*/ void run();
 
   private:
     std::string mPublisherName;
     zmq::socket_t *mPublisherp;
+
+    struct libwebsocket_context *mWSContextp;
 };
 
 }

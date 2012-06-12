@@ -5,7 +5,7 @@ CXXFILES:=$(shell find . -type f -name '*.cc' -print)
 OUTPUTS = server log-client
 
 SERVER_OBJECTS = server.o thread.o simulator.o global.o logger.o log-publisher.o log-writer.o presence.o log-writer-websocket.o
-CLIENT_OBJECTS = log-client.o global.o log-writer.o logger.o
+CLIENT_OBJECTS = log-client.o global.o log-writer.o logger.o thread.o
 OBJECTS = $(SERVER_OBJECTS)
 BUILD_DIR = build
 

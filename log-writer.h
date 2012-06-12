@@ -4,20 +4,22 @@
 #include <string>
 #include <zmq.hpp>
 
+#include "thread.h"
+
 namespace ShardFree
 {
 //
 // Outputs logs from the logger asynchronously on a separate thread.
 //
-class LogWriter
+class LogWriter : public Thread
 {
   public:
     LogWriter(const std::string &publisher_name = "inproc://logpub");
     virtual ~LogWriter();
 
-    void run();
-  private:
-    static void *runThread(void *argp);
+  protected:
+    /*virtual*/ void init();
+    /*virtual*/ void run();
 
   private:
     std::string mPublisherName;

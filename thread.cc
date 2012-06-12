@@ -13,16 +13,27 @@ namespace ShardFree
 void *Thread::runThread(void *argp)
 {
   Thread *threadp = (Thread *)(argp);
-  Logger::get().setPrefix(threadp->mID + ":");
+
 
   threadp->init();
   // We're initialized, we can let the parent thread go.
   {
     zmq::socket_t sender(getZMQContext(), ZMQ_PUSH);
-    sender.connect((std::string("inproc://ready") + threadp->mID).c_str());
+    try
+    {
+      sender.connect((std::string("inproc://ready") + threadp->mID).c_str());
+    }
+    catch (...)
+    {
+      std::cerr << getZMQErrorString() << std::endl;
+    }
     zmq::message_t message;
     sender.send(message);
   }
+
+  // FIXME: Log prefix initialization should happen earlier, but since
+  // we use this to initialize the log publisher, it causes problems.
+  Logger::get().setPrefix(threadp->mID + ":");
   threadp->run();
   return NULL;
 }

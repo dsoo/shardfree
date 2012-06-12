@@ -11,7 +11,8 @@ namespace ShardFree
 {
 
 //
-// Note: This is cribbed from the libwebsockets sample server code, which is frankly
+// FIXME: Major refactoring of all kinds needed here.
+// This is cribbed from the libwebsockets sample server code, which is frankly
 // sort of terrible. I'd like to refactor libwebsockets at some point to clean it
 // up, at a minimum putting a C++ wrapper around it to hide the gory implementation.
 //
@@ -72,11 +73,10 @@ static int callback_http(struct libwebsocket_context * context,
   return 0;
 }
 
-static int
-callback_log(struct libwebsocket_context * context,
-             struct libwebsocket *wsi,
-             enum libwebsocket_callback_reasons reason,
-             void *user, void *in, size_t len)
+static int callback_log(struct libwebsocket_context * context,
+                        struct libwebsocket *wsi,
+                        enum libwebsocket_callback_reasons reason,
+                        void *user, void *in, size_t len)
 {
   switch (reason)
   {
@@ -116,21 +116,10 @@ callback_log(struct libwebsocket_context * context,
 
 
 LogWriterWebsocket::LogWriterWebsocket(const std::string &publisher_name) :
+  Thread("LogWriterWebsocket"),
   mPublisherName(publisher_name),
   mPublisherp(NULL)
 {
-  // Create a worker thread that listens to the logger socket and prints the output
-  pthread_t worker;
-
-  // FIXME: This should be uniquely named
-  zmq::socket_t ready_socket(getZMQContext(), ZMQ_PULL);
-  ready_socket.bind("inproc://writerwebsocketready");
-
-  pthread_create (&worker, NULL, runThread, this);
-  zmq::message_t message;
-
-  // Waits until ZMQ sockets are abound before returning.
-  ready_socket.recv(&message);
 }
 
 LogWriterWebsocket::~LogWriterWebsocket()
@@ -139,7 +128,7 @@ LogWriterWebsocket::~LogWriterWebsocket()
   mPublisherp = NULL;
 }
 
-void LogWriterWebsocket::run()
+void LogWriterWebsocket::init()
 {
   mPublisherp = new zmq::socket_t(getZMQContext(), ZMQ_SUB);
   mPublisherp->setsockopt(ZMQ_SUBSCRIBE, "", 0);
@@ -161,6 +150,10 @@ void LogWriterWebsocket::run()
       sleep(1);
     }
   }
+}
+
+void LogWriterWebsocket::run()
+{
 
   int port = 7681;
   int opts = 0;
@@ -188,20 +181,11 @@ void LogWriterWebsocket::run()
   context = libwebsocket_create_context(port, interface, protocols,
                                         libwebsocket_internal_extensions,
                                         NULL, NULL, NULL, -1, -1, opts);
-
-  // Now that we're bound, tell the main thread that we're ready for use
-  {
-    zmq::socket_t sender(getZMQContext(), ZMQ_PUSH);
-    sender.connect("inproc://writerwebsocketready");
-    zmq::message_t message;
-    sender.send(message);
-  }
-
   while (1)
   {
     // Poll for incoming connections from websocket listeners and
     // simultaneously publish logs.
-                libwebsocket_service(context, 15); // Assuming a 60 Hz frame rate, try to handle at least once a frame
+    libwebsocket_service(context, 15); // Assuming a 60 Hz frame rate, try to handle at least once a frame
 
     zmq::message_t message;
     // Now, pull all waiting messages from the queue and push them to any waiting clients
@@ -209,18 +193,11 @@ void LogWriterWebsocket::run()
     {
       // FIXME: Validate lengths and buffer sizes
       unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + 1024 + LWS_SEND_BUFFER_POST_PADDING];
-        unsigned char *p = &buf[LWS_SEND_BUFFER_PRE_PADDING];
+      unsigned char *p = &buf[LWS_SEND_BUFFER_PRE_PADDING];
       memcpy(p, message.data(), message.size());
-                        libwebsockets_broadcast(&protocols[1], p, message.size());
+      libwebsockets_broadcast(&protocols[1], p, message.size());
     }
   }
-}
-
-void *LogWriterWebsocket::runThread(void *argp)
-{
-  LogWriterWebsocket *log_writerp = (LogWriterWebsocket *)argp;
-  log_writerp->run();
-  return 0;
 }
 
 }
