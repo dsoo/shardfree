@@ -28,10 +28,12 @@ Build libwebsockets as a submodule
     ./configure;make # Make install doesn't work
 
 To build, run:
+
     make depend
     make
 
 To clean, run:
+
     make clean
 
 ## Running
