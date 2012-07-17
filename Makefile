@@ -2,30 +2,33 @@
 # and it matters.
 
 CXXFILES:=$(shell find . -type f -name '*.cc' -print)
-OUTPUTS = server log-client
 
-SERVER_OBJECTS = server.o thread.o simulator.o global.o logger.o log-publisher.o log-writer.o presence.o log-writer-websocket.o
+OUTPUT_ROOT=build
+OBJ_DIR = $(OUTPUT_ROOT)/obj
+OUTPUTS := server log-client
+OUTPUTS := $(addprefix $(OUTPUT_ROOT)/, $(OUTPUTS))
+
+SERVER_OBJECTS := server.o thread.o simulator.o global.o logger.o log-publisher.o log-writer.o presence.o log-writer-websocket.o
+SERVER_OBJECTS := $(addprefix $(OBJ_DIR)/, $(SERVER_OBJECTS))
 CLIENT_OBJECTS = log-client.o global.o log-writer.o logger.o thread.o
 OBJECTS = $(SERVER_OBJECTS)
-BUILD_DIR = build
 
 WARNINGS = -Wall
-LFLAGS = -lzmq -lz ./libwebsockets/lib/.libs/libwebsockets.a
+LFLAGS = -Bstatic -lzmq -lz ./libwebsockets/lib/.libs/libwebsockets.a
 CPPFLAGS = $(WARNINGS) -g -I ./libwebsockets/lib
 
-all: $(BUILD_DIR) $(OUTPUTS)
+all: $(OUTPUT_ROOT) $(OBJ_DIR) $(OUTPUTS)
 
-$(BUILD_DIR):
+$(BUILD_DIR) $(OBJ_DIR):
 	mkdir -p $@
 
 clean:
-	rm -rf $(BUILD_DIR)
 	rm -rf $(OBJECTS)
 
-server: $(SERVER_OBJECTS)
+$(OUTPUT_ROOT)/server: $(SERVER_OBJECTS)
 	g++ $(CPPFLAGS) $(LFLAGS) $^ -o $@
 
-log-client: $(CLIENT_OBJECTS)
+$(OUTPUT_ROOT)/log-client: $(CLIENT_OBJECTS)
 	g++ $(CPPFLAGS) $(LFLAGS) $^ -o $@
 
 depend:
@@ -33,14 +36,17 @@ depend:
 	for F in $(CFILES); do \
 		D=`dirname $$F`; \
 		B=`basename -s .c $$F`; \
-		$(CC) $(CPPFLAGS) -MM -MT $$D/$$B.o -MG $$F \
+		$(CC) $(CPPFLAGS) -MM -MT $(OBJ_DIR)/$$B.o -MG $$F \
 		 >> dependencies.mk; \
 	done
 	for F in $(CXXFILES); do \
 		D=`dirname $$F`; \
 		B=`basename -s .cc $$F`; \
-		$(CXX) $(CPPFLAGS) -MM -MT $$D/$$B.o -MG $$F \
+		$(CXX) $(CPPFLAGS) -MM -MT $(OBJ_DIR)/$$B.o -MG $$F \
 		 >> dependencies.mk; \
 	done
 
-include dependencies.mk
+$(OBJ_DIR)/%.o: %.cc
+	$(CXX) $(CPPFLAGS) -c -o $@ $<
+
+-include dependencies.mk
