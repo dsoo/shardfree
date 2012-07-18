@@ -14,7 +14,7 @@ CLIENT_OBJECTS = log-client.o global.o log-writer.o logger.o thread.o
 OBJECTS = $(SERVER_OBJECTS)
 
 WARNINGS = -Wall
-LFLAGS = -Bstatic -lzmq -lz ./libwebsockets/lib/.libs/libwebsockets.a
+LFLAGS = -lzmq -lz ./libwebsockets/lib/.libs/libwebsockets.a
 CPPFLAGS = $(WARNINGS) -g -I ./libwebsockets/lib
 
 all: $(OUTPUT_ROOT) $(OBJ_DIR) $(OUTPUTS)
@@ -35,13 +35,13 @@ depend:
 	cp /dev/null dependencies.mk
 	for F in $(CFILES); do \
 		D=`dirname $$F`; \
-		B=`basename -s .c $$F`; \
+		B=`basename $$F .c`; \
 		$(CC) $(CPPFLAGS) -MM -MT $(OBJ_DIR)/$$B.o -MG $$F \
 		 >> dependencies.mk; \
 	done
 	for F in $(CXXFILES); do \
 		D=`dirname $$F`; \
-		B=`basename -s .cc $$F`; \
+		B=`basename $$F .cc`; \
 		$(CXX) $(CPPFLAGS) -MM -MT $(OBJ_DIR)/$$B.o -MG $$F \
 		 >> dependencies.mk; \
 	done
