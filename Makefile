@@ -3,8 +3,9 @@
 
 CXXFILES:=$(shell find . -type f -name '*.cc' -print)
 
-OUTPUT_ROOT=build
+OUTPUT_ROOT=/tmp/build
 OBJ_DIR = $(OUTPUT_ROOT)/obj
+3P_DIR = $(OUTPUT_ROOT)/3p
 OUTPUTS := server log-client
 OUTPUTS := $(addprefix $(OUTPUT_ROOT)/, $(OUTPUTS))
 
@@ -14,19 +15,51 @@ CLIENT_OBJECTS = log-client.o global.o log-writer.o logger.o thread.o
 OBJECTS = $(SERVER_OBJECTS)
 
 WARNINGS = -Wall
-LFLAGS = -lzmq -lz ./libwebsockets/lib/.libs/libwebsockets.a
-CPPFLAGS = $(WARNINGS) -g -I ./libwebsockets/lib
+LFLAGS = -lz -lpthread -lrt
+CPPFLAGS = $(WARNINGS) -g -I $(3P_DIR)/include
 
-all: $(OUTPUT_ROOT) $(OBJ_DIR) $(OUTPUTS)
+.PHONY: all server submodules libwebsockets zeromq3-x libs
 
-$(BUILD_DIR) $(OBJ_DIR):
+all: $(OUTPUTS)
+server: $(OUTPUT_ROOT) $(OBJ_DIR) $(OUTPUT_ROOT)/server
+vulcan:
+	vulcan build -v -s . -p $(OUTPUT_ROOT) -c "make libs && make depend && make server" -o ./shardfree.tgz
+
+$(OUTPUT_ROOT) $(OBJ_DIR):
 	mkdir -p $@
+
+
+submodules:
+	git submodule init
+	git submodule update
+
+libs: submodules libwebsockets zeromq3-x
+
+libwebsockets:
+	mkdir -p $(3P_DIR);
+	cd libwebsockets; \
+	./configure --prefix=$(3P_DIR); \
+	make install
+
+zeromq3-x:
+	mkdir -p $(3P_DIR);
+	cd zeromq3-x; \
+	./autogen.sh; \
+	./configure --prefix=$(3P_DIR); \
+	make install
+
+libclean:
+	cd libwebsockets; \
+	make clean
+	cd zeromq3-x; \
+	make clean
 
 clean:
 	rm -rf $(OBJECTS)
 
 $(OUTPUT_ROOT)/server: $(SERVER_OBJECTS)
-	g++ $(CPPFLAGS) $(LFLAGS) $^ -o $@
+	ls $(3P_DIR)/lib
+	g++ $(CPPFLAGS) $(LFLAGS) $^ $(3P_DIR)/lib/libwebsockets.a $(3P_DIR)/lib/libzmq.a -o $@
 
 $(OUTPUT_ROOT)/log-client: $(CLIENT_OBJECTS)
 	g++ $(CPPFLAGS) $(LFLAGS) $^ -o $@

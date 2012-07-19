@@ -1,3 +1,6 @@
 [submodule "libwebsockets"]
 	path = libwebsockets
 	url = https://github.com/davidgaleano/libwebsockets
+[submodule "zeromq3-x"]
+	path = zeromq3-x
+	url = https://github.com/zeromq/zeromq3-x.git

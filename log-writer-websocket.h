@@ -4,7 +4,7 @@
 // Writes logs out to a websocket server.
 
 #include <string>
-#include <zmq.hpp>
+#include "zmq.hpp"
 
 #include "thread.h"
 

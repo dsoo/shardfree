@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <unistd.h>
-#include <zmq.hpp>
+#include "zmq.hpp"
 
 #include "global.h"
 #include "log-writer.h"

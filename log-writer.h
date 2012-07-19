@@ -2,7 +2,7 @@
 #define SHARDFREE_LOG_WRITER_H_
 
 #include <string>
-#include <zmq.hpp>
+#include "zmq.hpp"
 
 #include "thread.h"
 

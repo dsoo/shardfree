@@ -1,7 +1,7 @@
 #ifndef SHARDFREE_GLOBAL_H_
 #define SHARDFREE_GLOBAL_H_
 
-#include <zmq.hpp>
+#include "zmq.hpp"
 
 namespace ShardFree
 {

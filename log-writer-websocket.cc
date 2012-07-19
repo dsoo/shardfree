@@ -189,7 +189,7 @@ void LogWriterWebsocket::run()
 
     zmq::message_t message;
     // Now, pull all waiting messages from the queue and push them to any waiting clients
-    while (mPublisherp->recv(&message, ZMQ_NOBLOCK))
+    while (mPublisherp->recv(&message, ZMQ_DONTWAIT))
     {
       // FIXME: Validate lengths and buffer sizes
       unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + 1024 + LWS_SEND_BUFFER_POST_PADDING];
