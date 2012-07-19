@@ -3,7 +3,7 @@
 
 CXXFILES:=$(shell find . -type f -name '*.cc' -print)
 
-OUTPUT_ROOT=/tmp/build
+OUTPUT_ROOT=$(abspath ./build)
 OBJ_DIR = $(OUTPUT_ROOT)/obj
 3P_DIR = $(OUTPUT_ROOT)/3p
 OUTPUTS := server log-client
@@ -15,12 +15,12 @@ CLIENT_OBJECTS = log-client.o global.o log-writer.o logger.o thread.o
 OBJECTS = $(SERVER_OBJECTS)
 
 WARNINGS = -Wall
-LFLAGS = -lz -lpthread -lrt
+LFLAGS = -lz -lpthread
 CPPFLAGS = $(WARNINGS) -g -I $(3P_DIR)/include
 
 .PHONY: all server submodules libwebsockets zeromq3-x libs
 
-all: $(OUTPUTS)
+all: $(OUTPUTS) $(OBJ_DIR)
 server: $(OUTPUT_ROOT) $(OBJ_DIR) $(OUTPUT_ROOT)/server
 vulcan:
 	vulcan build -v -s . -p $(OUTPUT_ROOT) -c "make libs && make depend && make server" -o ./shardfree.tgz
@@ -58,7 +58,6 @@ clean:
 	rm -rf $(OBJECTS)
 
 $(OUTPUT_ROOT)/server: $(SERVER_OBJECTS)
-	ls $(3P_DIR)/lib
 	g++ $(CPPFLAGS) $(LFLAGS) $^ $(3P_DIR)/lib/libwebsockets.a $(3P_DIR)/lib/libzmq.a -o $@
 
 $(OUTPUT_ROOT)/log-client: $(CLIENT_OBJECTS)
