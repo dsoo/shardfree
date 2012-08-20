@@ -20,7 +20,7 @@ CPPFLAGS = $(WARNINGS) -g -I $(3P_DIR)/include
 
 .PHONY: all server submodules libwebsockets zeromq3-x libs
 
-all: $(OUTPUTS) $(OBJ_DIR)
+all: $(OBJ_DIR) $(OUTPUTS)
 server: $(OUTPUT_ROOT) $(OBJ_DIR) $(OUTPUT_ROOT)/server
 vulcan:
 	vulcan build -v -s . -p $(OUTPUT_ROOT) -c "make libs && make depend && make server" -o ./shardfree.tgz
@@ -33,11 +33,12 @@ submodules:
 	git submodule init
 	git submodule update
 
-libs: submodules libwebsockets zeromq3-x
+libs: libwebsockets zeromq3-x
 
 libwebsockets:
 	mkdir -p $(3P_DIR);
 	cd libwebsockets; \
+	chmod a+x ./install-sh; \
 	./configure --prefix=$(3P_DIR); \
 	make install
 
@@ -61,7 +62,7 @@ $(OUTPUT_ROOT)/server: $(SERVER_OBJECTS)
 	g++ $(CPPFLAGS) $(LFLAGS) $^ $(3P_DIR)/lib/libwebsockets.a $(3P_DIR)/lib/libzmq.a -o $@
 
 $(OUTPUT_ROOT)/log-client: $(CLIENT_OBJECTS)
-	g++ $(CPPFLAGS) $(LFLAGS) $^ -o $@
+	g++ $(CPPFLAGS) $(LFLAGS) $^ $(3P_DIR)/lib/libzmq.a -o $@
 
 depend:
 	cp /dev/null dependencies.mk

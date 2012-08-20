@@ -21,7 +21,12 @@ some real work into the build tools. In any case:
 
 Install zeromq using brew
 
-Build libwebsockets as a submodule
+### Install automake and other build tools (for zeromq)
+    brew install automake
+    brew install pkg-config
+    brew install libtool
+
+### Build libwebsockets and zeromq-3x as submodules
 
     git submodule init
     cd libwebsockets
