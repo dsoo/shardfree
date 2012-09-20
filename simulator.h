@@ -7,6 +7,8 @@
 namespace ShardFree
 {
 
+const int SIZE = 4;
+
 class Simulator : public Thread
 {
   public:
@@ -25,6 +27,9 @@ class Simulator : public Thread
     int mCounter;
     zmq::socket_t *mPubSocketp;
     std::vector<zmq::socket_t *> mNeighbors;
+
+    int mGrid[SIZE][SIZE];
+    int mNextGrid[SIZE][SIZE];
 };
 
 }

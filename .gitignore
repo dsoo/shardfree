@@ -5,3 +5,4 @@ dependencies.mk
 build/
 log-client
 server
+.DS_Store

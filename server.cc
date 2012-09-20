@@ -54,7 +54,7 @@ int main()
   //
   std::vector<ShardFree::Thread *> simulators;
 
-  for (int simulator_id = 0; simulator_id < 4; ++simulator_id) {
+  for (int simulator_id = 0; simulator_id < 1; ++simulator_id) {
     std::ostringstream id_str;
     id_str << "sim" << simulator_id;
 

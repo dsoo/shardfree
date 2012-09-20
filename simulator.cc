@@ -31,6 +31,14 @@ Simulator::Simulator(const std::string &id) : Thread(id), mCounter(0)
   // Start up PUB socket to push updates to listeners
   // Find neighbors
   // Connect to neighbors
+
+  // Initialize data
+  memset(mGrid, 0, SIZE*SIZE*sizeof(int));
+  memset(mNextGrid, 0, SIZE*SIZE*sizeof(int));
+
+  mGrid[0][0] = 1;
+  mGrid[0][1] = 1;
+  mGrid[0][2] = 1;
 }
 
 Simulator::~Simulator()
@@ -115,13 +123,72 @@ void Simulator::simulate()
   SFLOG << "Testy testy " << mCounter;
   // Push all updates as a result of simulation into update queue/data structure
   mCounter += 1;
+  for (int y = 0; y < SIZE; ++y)
+  {
+    for (int x = 0; x < SIZE; ++x)
+    {
+      int count = 0;
+
+      int x_low = ((x-1) + SIZE) % SIZE;
+      int x_high = (x+1) % SIZE;
+      int y_low = ((y-1) + SIZE) % SIZE;
+      int y_high = (y+1) % SIZE;
+
+      // Simple Conway's life. Evaluate neighbors, etc.
+      count += mGrid[y_low][x_low];
+      count += mGrid[y_low][x];
+      count += mGrid[y_low][x_high];
+      count += mGrid[y][x_low];
+      count += mGrid[y][x_high];
+      count += mGrid[y_high][x_low];
+      count += mGrid[y_high][x];
+      count += mGrid[y_high][x_high];
+
+      if (mGrid[y][x])
+      {
+        if ((count > 1) && (count < 4))
+        {
+          mNextGrid[y][x] = 1;
+        }
+        else
+        {
+          mNextGrid[y][x] = 0;
+        }
+      }
+      else
+      {
+        if (count == 3)
+        {
+          mNextGrid[y][x] = 1;
+        }
+      }
+    }
+  }
   return;
 }
+
 
 void Simulator::resolveAndPush()
 {
   // Iterate through all updates, resolving conflicts and applying to data structure
   // Push updates out to anybody that's listening
+
+  if (1)
+  {
+    // Debugging spam
+    for (int y = 0; y < SIZE; ++y)
+    {
+      std::ostringstream line;
+      line << ":";
+      for (int x = 0; x < SIZE; ++x)
+      {
+        // Simple Conway's life. Evaluate neighbors, de
+        line << mNextGrid[y][x] << ":";
+      }
+      SFLOG << y << " " << line.str();
+    }
+  }
+  memcpy(mGrid, mNextGrid, SIZE*SIZE*sizeof(int));
 }
 
-}
+} // namespace

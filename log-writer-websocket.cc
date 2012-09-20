@@ -185,7 +185,7 @@ void LogWriterWebsocket::run()
   {
     // Poll for incoming connections from websocket listeners and
     // simultaneously publish logs.
-    libwebsocket_service(context, 15); // Assuming a 60 Hz frame rate, try to handle at least once a frame
+    libwebsocket_service(context, 5); // Poll super-frequently to try and reduce latency.
 
     zmq::message_t message;
     // Now, pull all waiting messages from the queue and push them to any waiting clients

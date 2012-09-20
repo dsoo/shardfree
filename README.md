@@ -19,8 +19,6 @@ I haven't done anything beyond the minimum to get things up and running here. On
 I decide to deploy this on something other than one of my development Macs I'll put
 some real work into the build tools. In any case:
 
-Install zeromq using brew
-
 ### Install automake and other build tools (for zeromq)
     brew install automake
     brew install pkg-config
