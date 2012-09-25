@@ -3,7 +3,7 @@
 <project id="6464646a-d695-0c47-b524-210e8d99d398" kpf_version="5" name="shardfree.komodoproject">
 <preference-set idref="6464646a-d695-0c47-b524-210e8d99d398">
   <string relative="path" id="import_dirname"></string>
-  <string id="import_exclude_matches">*.*~;*.bak;*.tmp;CVS;.#*;*.pyo;*.pyc;.svn;.git;.hg;.bzr;*%25*;tmp*.html;.DS_Store;*.swp;*.kpf;*.komodoproject;.komodotools;__pycache__;build;*.o;libwebsockets</string>
+  <string id="import_exclude_matches">*.*~;*.bak;*.tmp;CVS;.#*;*.pyo;*.pyc;.svn;.git;.hg;.bzr;*%25*;tmp*.html;.DS_Store;*.swp;*.kpf;*.komodoproject;.komodotools;__pycache__;build;*.o;</string>
   <string id="import_include_matches"></string>
 </preference-set>
 </project>

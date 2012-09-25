@@ -9,17 +9,19 @@ OBJ_DIR = $(OUTPUT_ROOT)/obj
 OUTPUTS := server log-client
 OUTPUTS := $(addprefix $(OUTPUT_ROOT)/, $(OUTPUTS))
 
-SERVER_OBJECTS := server.o thread.o simulator.o global.o logger.o log-publisher.o log-writer.o presence.o log-writer-websocket.o
+SERVER_OBJECTS := server.o thread.o simulator.o global.o logger.o log-publisher.o log-writer.o websocket-proxy.o presence.o log-writer-websocket.o
 SERVER_OBJECTS := $(addprefix $(OBJ_DIR)/, $(SERVER_OBJECTS))
 CLIENT_OBJECTS = log-client.o global.o log-writer.o logger.o thread.o
 OBJECTS = $(SERVER_OBJECTS)
 
-WARNINGS = -Wall
+WARNINGS = -Wall -Wc++11-extensions
 LFLAGS = -lz -lpthread
 CPPFLAGS = $(WARNINGS) -g -I $(3P_DIR)/include
 
 .PHONY: all server submodules libwebsockets zeromq3-x libs
 
+run: all
+	build/server
 all: $(OBJ_DIR) $(OUTPUTS)
 server: $(OUTPUT_ROOT) $(OBJ_DIR) $(OUTPUT_ROOT)/server
 vulcan:

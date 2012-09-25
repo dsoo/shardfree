@@ -1,74 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset=utf-8 />
- <title>Logger</title>
+  <meta charset=utf-8 />
+  <title>Logger</title>
+  <style type="text/css">
+    body {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+    .cell {
+      display: inline
+    }
+  </style>
 </head>
 
 <body>
-  <div id=wsdi_status>Not initialized</div></td>
+  <div id='life'></div>
+  <div id='wsdi_status'>Not initialized</div>
   <code id=log>
   </code>
 
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
   <script>
-    // Cribbed from the libwebsocket example. Needs some serious cleanup.
 
-    var pos = 0;
+    $(document).ready(function() {
+      // Cribbed from the libwebsocket example. Needs some serious cleanup.
 
-    function get_appropriate_ws_url()
-    {
-      var pcol;
-      var u = document.URL;
+      var pos = 0;
 
-      // We open the websocket encrypted if this page came on an
-      // https:// url itself, otherwise unencrypted
+      function get_appropriate_ws_url()
+      {
+        var pcol;
+        var u = document.URL;
 
-      if (u.substring(0, 5) == "https") {
-        pcol = "wss://";
-        u = u.substr(8);
+        // We open the websocket encrypted if this page came on an
+        // https:// url itself, otherwise unencrypted
+
+        if (u.substring(0, 5) == "https") {
+          pcol = "wss://";
+          u = u.substr(8);
+        } else {
+          pcol = "ws://";
+          if (u.substring(0, 4) == "http")
+            u = u.substr(7);
+        }
+
+        u = u.split('/');
+
+        return pcol + u[0];
+      }
+
+
+      // Logging websocket
+      $('#log').text(get_appropriate_ws_url())
+      var socket_log;
+
+      if (typeof MozWebSocket != "undefined") {
+        socket_log = new MozWebSocket(get_appropriate_ws_url(), "log")
       } else {
-        pcol = "ws://";
-        if (u.substring(0, 4) == "http")
-          u = u.substr(7);
+        socket_log = new WebSocket(get_appropriate_ws_url(), "log")
       }
 
-      u = u.split('/');
+      try {
+        socket_log.onopen = function() {
+          console.log($('#wsdi_status'))
+          $('#wsdi_status')[0].style.backgroundColor = "#40ff40"
+          $('#wsdi_status').text(" websocket connection opened ")
+        }
 
-      return pcol + u[0];
-    }
+        socket_log.onmessage = function got_packet(msg) {
+          //console.log('Msg data:' + msg.data)
+          var div = $('<div class="line"></div>').text(msg.data)
+          $('#log').append(div)
+          var lines = $('.line')
+          if (lines.length > 10) {
+            $(lines[0]).remove()
+          }
+          //document.getElementById("log").appendChild(div)
+        }
 
-
-    document.getElementById("log").textContent = get_appropriate_ws_url();
-    var socket_log;
-
-    if (typeof MozWebSocket != "undefined") {
-      socket_log = new MozWebSocket(get_appropriate_ws_url(), "log");
-    } else {
-      socket_log = new WebSocket(get_appropriate_ws_url(), "log");
-    }
-
-
-    try {
-      socket_log.onopen = function() {
-        document.getElementById("wsdi_status").style.backgroundColor = "#40ff40";
-        document.getElementById("wsdi_status").textContent = " websocket connection opened ";
+        socket_log.onclose = function(){
+          $('#wsdi_status')[0].style.backgroundColor = "#ff4040"
+          $('#wsdi_status')[0].text(" websocket connection CLOSED ")
+        }
+      } catch(exception) {
+        alert('<p>Error' + exception);
       }
 
-      socket_log.onmessage =function got_packet(msg) {
-        console.log('Msg data:' + msg.data)
-        var div = document.createElement('div');
-        var text = document.createTextNode(msg.data + '\n')
-        div.appendChild(text);
-        document.getElementById("log").appendChild(div)
+      //
+      // Game of life
+      //
+
+      // Set up display
+      //
+      console.log('')
+      var SIZE = 4
+      var x, y
+      for (y = 0; y < SIZE; ++y) {
+        var row = $('<div></div>')
+        row.attr('class', 'row').attr('id', 'row' + y)
+        $('#life').append(row)
+        for (x = 0; x < SIZE; ++x) {
+          var id = 'cell' + x + '-' + y
+          var cell = $('<div></div>')
+          cell.attr('class','cell').attr('id', id).text('0')
+          row.append(cell)
+        }
       }
 
-      socket_log.onclose = function(){
-        document.getElementById("wsdi_statustd").style.backgroundColor = "#ff4040";
-        document.getElementById("wsdi_status").textContent = " websocket connection CLOSED ";
+      // App websocket
+      var socket_life;
+      var cur_msg;
+
+      if (typeof MozWebSocket != "undefined") {
+        socket_life = new MozWebSocket(get_appropriate_ws_url(), "life");
+      } else {
+        socket_life = new WebSocket(get_appropriate_ws_url(), "life");
       }
-    } catch(exception) {
-      alert('<p>Error' + exception);
-    }
+
+      try {
+        socket_life.onopen = function() {
+          console.log('life socket opened')
+        }
+
+        socket_life.onmessage = function got_packet(msg) {
+          cur_msg = msg;
+          var reader = new FileReader();
+          reader.onloadend = function() {
+            var data = new Int32Array(reader.result)
+            var x, y
+            for (y = 0; y < SIZE; ++y) {
+              for (x = 0; x < SIZE; ++x) {
+                var value = data[y*SIZE + x]
+                var id = '#cell' + x + '-' + y
+                $(id).text(value.toString())
+              }
+            }
+          }
+          reader.readAsArrayBuffer(msg.data)
+        }
+
+        socket_life.onclose = function(){
+          console.log('Life socket closed')
+        }
+      } catch(exception) {
+        alert('<p>Error' + exception);
+      }
+
+    })
+
   </script>
 </body>
 </html>

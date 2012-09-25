@@ -14,6 +14,8 @@
 #include "log-publisher.h"
 #include "log-writer.h"
 #include "log-writer-websocket.h"
+#include "websocket-proxy.h"
+
 #include "presence.h"
 #include "simulator.h"
 
@@ -34,20 +36,20 @@ int main()
   ShardFree::LogWriter log_writer("inproc://logpub");
   log_writer.start();
 
-  ShardFree::LogWriterWebsocket log_writer_websocket("inproc://logpub");
-  log_writer_websocket.start();
-
+  //ShardFree::LogWriterWebsocket log_writer_websocket("inproc://logpub");
+  //log_writer_websocket.start();
+  //
   //
   // Spawn the presence server
   //
-  ShardFree::Presence presence;
-  presence.start();
+  //ShardFree::Presence presence;
+  //presence.start();
 
   //
   // Test talking to the presence service
   //
-  ShardFree::PresenceClient presence_client;
-  presence_client.sendRequest();
+  //ShardFree::PresenceClient presence_client;
+  //presence_client.sendRequest();
 
   //
   // Spawn simulation threads
@@ -64,6 +66,9 @@ int main()
     simulatorp->start();
     simulators.push_back(simulatorp);
   }
+
+  ShardFree::WebsocketProxy ws_proxy;
+  ws_proxy.start();
 
   int counter = 0;
   while (1)

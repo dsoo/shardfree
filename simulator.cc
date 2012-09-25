@@ -18,8 +18,11 @@
 //    std::vector<zmq::socket_t&> mSockets;
 //};
 
+
 namespace ShardFree
 {
+
+const int MEM_SIZE = SIZE*SIZE*sizeof(int);
 
 //
 // Instance methods
@@ -33,8 +36,8 @@ Simulator::Simulator(const std::string &id) : Thread(id), mCounter(0)
   // Connect to neighbors
 
   // Initialize data
-  memset(mGrid, 0, SIZE*SIZE*sizeof(int));
-  memset(mNextGrid, 0, SIZE*SIZE*sizeof(int));
+  memset(mGrid, 0, MEM_SIZE);
+  memset(mNextGrid, 0, MEM_SIZE);
 
   mGrid[0][0] = 1;
   mGrid[0][1] = 1;
@@ -55,7 +58,8 @@ void Simulator::run()
 {
   // Set up the PUB socket where you push all your output
   mPubSocketp = new zmq::socket_t(context(), ZMQ_PUB);
-  mPubSocketp->bind((std::string("inproc://pub") + id()).c_str());
+  mPubSocketp->bind("inproc://life");
+  //mPubSocketp->bind((std::string("inproc://pub") + id()).c_str());
 
   // Tell the presence server that you're available
 
@@ -119,7 +123,7 @@ void Simulator::collect()
 
 void Simulator::simulate()
 {
-  sleep(1);
+  usleep(50000);
   SFLOG << "Testy testy " << mCounter;
   // Push all updates as a result of simulation into update queue/data structure
   mCounter += 1;
@@ -173,7 +177,7 @@ void Simulator::resolveAndPush()
   // Iterate through all updates, resolving conflicts and applying to data structure
   // Push updates out to anybody that's listening
 
-  if (1)
+  if (0)
   {
     // Debugging spam
     for (int y = 0; y < SIZE; ++y)
@@ -188,7 +192,10 @@ void Simulator::resolveAndPush()
       SFLOG << y << " " << line.str();
     }
   }
-  memcpy(mGrid, mNextGrid, SIZE*SIZE*sizeof(int));
+  memcpy(mGrid, mNextGrid, MEM_SIZE);
+  zmq::message_t grid(MEM_SIZE);
+  memcpy((void*)grid.data(), mGrid, MEM_SIZE);
+  mPubSocketp->send(grid);
 }
 
 } // namespace
